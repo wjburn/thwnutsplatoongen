@@ -78,7 +78,7 @@ class GenerateCharacter(DefineMaps):
         self.roll_d6 = roll_dice.roll_d6()
 
     #if attribute_tree is 5 or less, use the v4 attributes table
-    #else use compbrdium attributes table and returns of "reroll" are re-gbrerated until another result is returned
+    #else use compendium attributes table and returns of "reroll" are re-generated until another result is returned
     def get_attribute(self):
         attribute_tree = self.roll_d6()
         while True:

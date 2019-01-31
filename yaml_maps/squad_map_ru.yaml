@@ -1,0 +1,33 @@
+Infantry:
+  base: 2
+  d6: 1
+  max: 7
+  platoon: 3
+  NCO: 1
+  JrNCO: 1
+  LMG: 1
+  LMG_Assist: 1
+  SA_Gerenade_Rifle: 0
+  Rifle: 4
+SMG:
+  base: 5
+  d6: 1
+  max: 10
+  platoon: 3
+  NCO: 1
+  JrNCO: 1
+  LMG: 1
+  LMG_Assist: 1
+  SA_Gerenade_Rifle: 0
+  Rifle: 7
+Tank_Riders:
+  base: 1
+  d6: 1
+  max: 5
+  platoon: 5
+  NCO: 1
+  JrNCO: 1
+  LMG: 0
+  LMG_Assist: 0
+  SA_Gerenade_Rifle: 0
+  Rifle: 3

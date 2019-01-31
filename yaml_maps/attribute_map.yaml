@@ -1,0 +1,87 @@
+Nuts_v4_Attributes_Table:
+    1:
+        1: agile
+        2: athlete
+        3: ball player
+        4: born leader
+        5: brawler
+        6: clumsy
+    2:
+        1: coward
+        2: crack shot
+        3: dumbass
+        4: fast
+        5: greedy
+        6: tough as nails
+    3:
+        1: initiative
+        2: knifeman
+        3: lucky
+        4: marksman
+        5: near sighted
+        6: nerves of steel
+    4:
+        1: no attribute
+        2: poser
+        3: quick reflexes
+        4: rage
+        5: resilient
+        6: runt
+    5:
+        1: shirker
+        2: sickly
+        3: slow
+        4: slow to react
+        5: stealthy
+        6: steely eyes
+    6:
+        1: stone cold
+        2: tank killer
+        3: tough
+        4: unlucky
+        5: wussy
+        6: choice
+
+Nuts_Compendium_Attributes_Table:
+    1:
+        1: aidman
+        2: artillery/tank gun
+        3: bad shot
+        4: combat sense
+        5: distracted
+        6: driver expert
+    2:
+        1: drunkard
+        2: engineer
+        3: fanatic
+        4: language
+        5: limp
+        6: loud mouth/good ears
+    3:
+        1: mines/traps expert
+        2: mortar man
+        3: nervous
+        4: observer
+        5: plucky
+        6: quick draw
+    4:
+        1: radio tech
+        2: ruthless
+        3: scrounger
+        4: self-rally
+        5: sniper
+        6: specialist Bazooka
+    5: 
+        1: specialist LMG/BAR 
+        2: specialist MMG/HMG
+        3: specialist SMG
+        4: specialist pistol
+        5: specialist swimming
+        6: specialist horse rider
+    6:
+        1: mascot
+        2: reroll
+        3: reroll
+        4: reroll
+        5: reroll
+        6: reroll

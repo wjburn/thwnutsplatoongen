@@ -1,5 +1,5 @@
 # thwnutsplatoongen
-a platoon generator for twohourwargames NUTS gameo
+a platoon generator for twohourwargames NUTS game
 
 generates a platoon based on the country code and platoon type specified 
 

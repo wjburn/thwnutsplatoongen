@@ -165,7 +165,7 @@ class GenerateYaml:
         self.yaml_file = yaml_file
 
     #manually generate yaml formatting and pass off for writing
-    def write_platoon(self, platoon, country_code, platoon_type):
+    def write_yaml(self, platoon, country_code, platoon_type):
         x = 0
         platoon_yaml = []
         platoon_yaml.append("%s_%s:" % (country_code, platoon_type))
@@ -238,39 +238,9 @@ class GenerateHTML:
 class GenerateUserInterface:
 
     def __init__(self, *args, **kwargs):
-        self.countries = {
-            "us": "United States",
-            "br": "Britain",
-            "ge": "Germany",
-            "ru": "Russia",
-        }
-        
-        self.platoon_types = {
-            "us": ["Infantry", "Paratroopers", "Rangers", "Armored_Infantry"],
-            "ru": ["Infantry", "SMG", "Tank_Riders"],
-            "ge": ["Infantry", "Volks_Grenadiers", "Airborne"],
-            "br": ["Infantry", "Paratroopers"],
-        }
+        pass
 
-    def countries_menu(self):
-        while True:
-            for key in self.countries:
-                print(key + ":", self.countries[key])
-            inp = input("Enter two letter value: ")
-            if inp in self.countries:
-                return(inp)
-            else:
-                print("Invalid input!")
-    
-    def platoon_menu(self, country_code):
-        while True:
-            for i in range(len(self.platoon_types[country_code])):
-                print(str(i+1) + ":", self.platoon_types[country_code][i])
-            inp = int(input("Enter a number: "))
-            if inp-1 in range(len(self.platoon_types[country_code])):
-                return(self.platoon_types[country_code][inp-1])
-            else:
-                print("Invalid input!")
+
     
     def file_menu(self, country_code, platoon_type):
         while True:
@@ -290,47 +260,118 @@ class GenerateUserInterface:
                     return(yaml_file, html_file)
 
 
+class ManageFiles:
+    def __init__(self):
+        pass
+
+    def check_overwrite(self, file):
+        if os.path.exists(file):
+            inp = input("File exists, do you want to overwrite? (y/n): ")
+            if inp == 'y' or inp == 'yes':
+                return(1)
+            else:
+                return
+                
 
 
+    def save_file(self, file_name):
+        while True:
+            directory = input("Enter a directory to save files: ")
+            if not os.path.exists(directory):
+                os.makedirs(directory)
 
+            yaml_file = os.path.join(directory, file_name + ".yaml")
+            html_file = os.path.join(directory, file_name + ".html")
+            if self.check_overwrite(yaml_file):
+                write_yaml(yaml_file)
+                write_html(html_file)
             
 
+#            if os.path.exists(yaml_file):
+#                print("File exists, do you want to overwrite (y/n: ")
+#                if 
+#                 or os.path.exists(html_file):
+#                print("Files %s or %s already exist.  Will not over write." % (yaml_file, html_file))
+#                print("Move or delete these files manaually first")
+#                input("Press any key to quit")
+#                sys.exit()
+#            else:
+#                return(yaml_file, html_file)
+#
+            
+
+
+class GenerateMenu:
+    def __init__(self):
+        pass
+
+    def menu_ui(self, menu_items):
+        for item in range(len(menu_items)):
+            print(str(item+1) + ":", menu_items[item])
+        inp = int(input("Enter a numeric value: "))
+        return(menu_items[inp-1])
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--country-code', action='store',      dest="country_code", help="country to generate characters, us, br, ge, ru")
-    parser.add_argument('--platoon-type', action='store',      dest="platoon_type", help="type of platoon to generate, default Infantry")#, default='Infantry')
-    parser.add_argument('--replacements', action='store',      dest="replacements", help="instead of generating a whole platoon, generate replacements for the specified squad, --replacements=2,3 generate two replacements in third squad")
-    parser.add_argument('--new-platoon',  action='store_true', default=True,       help="generate a new platoon of platoon-type and with country-code")
-    parser.add_argument('--file-name',    action="store",      dest="file_name",    help="full path without an extension (.e.g. C:\\Documents\\NUTS\\us_infantry_platoon) to where to store/access yaml or html files. For generating a new platoon, this file will be overwritten")
-    args = parser.parse_args()
+    top_level = [
+        "Generate New Platoon",
+        "Update Existing Platoon",
+    ]
+
+    country_codes = {
+            "United States": "us",
+            "Britain": "br",
+            "Germany": "ge",
+            "Russia": "ru",
+    }
+
+    platoon_types = {
+        "us": ["Infantry", "Paratroopers", "Rangers", "Armored_Infantry"],
+        "ru": ["Infantry", "SMG", "Tank_Riders"],
+        "ge": ["Infantry", "Volks_Grenadiers", "Airborne"],
+        "br": ["Infantry", "Paratroopers"],
+    }
+
+    def get_country_code():
+        country_list = []
+        for key in country_codes:
+            country_list.append(key)
+        return(country_codes[gen_menu.menu_ui(country_list)])
+
+    gen_menu = GenerateMenu()
+    menu_choice = gen_menu.menu_ui(top_level)
+    if menu_choice == "Generate New Platoon":
+        country_code = get_country_code()
+        gen_menu.menu_ui(platoon_types[country_code])
 
 
     
 
-    gen_ui = GenerateUserInterface()
-    if not args.country_code:
-        args.country_code = gen_ui.countries_menu()
-    if not args.platoon_type:
-        args.platoon_type = gen_ui.platoon_menu(args.country_code)
-    if not args.file_name:
-        (yaml_file, html_file) = gen_ui.file_menu(args.country_code, args.platoon_type)
-    else:
-       yaml_file = args.file_name + ".yaml"
-       html_file = args.file_name + ".html"
 
-            
-
-    #generate a new platoon based on country code and platoon type
-    gen_platoon = GeneratePlatoon(args.country_code, args.platoon_type)
-    platoon = gen_platoon.get_platoon()
-
-    #using the platoon output from above, parse the data into yaml format and store to a file
-    gen_yaml = GenerateYaml(yaml_file)
-    platoon_yaml = gen_yaml.write_platoon(platoon, args.country_code, args.platoon_type)
-
-    #using the above generated yaml file, create an html file for user consumption
-    gen_html = GenerateHTML(yaml_file, html_file)
-    gen_html.write_html()
-
-    print("You can find your html file here: %s" % html_file)
-    input("Press any key to exit")
+#    if not args.country_code:
+#        args.country_code = gen_ui.countries_menu()
+#    if not args.platoon_type:
+#        args.platoon_type = gen_ui.platoon_menu(args.country_code)
+#    if not args.file_name:
+#        (yaml_file, html_file) = gen_ui.file_menu(args.country_code, args.platoon_type)
+#    else:
+#       yaml_file = args.file_name + ".yaml"
+#       html_file = args.file_name + ".html"
+#
+#            
+#
+#
+#    #generate a new platoon based on country code and platoon type
+#    gen_platoon = GeneratePlatoon(args.country_code, args.platoon_type)
+#    platoon = gen_platoon.get_platoon()
+#
+#    #using the platoon output from above, parse the data into yaml format and store to a file
+#    gen_yaml = GenerateYaml(yaml_file)
+#    platoon_yaml = gen_yaml.write_platoon(platoon, args.country_code, args.platoon_type)
+#
+#    #using the above generated yaml file, create an html file for user consumption
+#    gen_html = GenerateHTML(yaml_file, html_file)
+#    gen_html.write_html()
+#
+#    print("You can find your html file here: %s" % html_file)
+#    input("Press any key to exit")

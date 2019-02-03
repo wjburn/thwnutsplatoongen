@@ -158,34 +158,6 @@ class GeneratePlatoon(GenerateCharacter):
             }
             squad_members.append(character)
         return(squad_members)
-    
-class GenerateYaml:
-
-    def __init__(self, yaml_file):
-        self.yaml_file = yaml_file
-
-    #manually generate yaml formatting and pass off for writing
-    def write_yaml(self, platoon, country_code, platoon_type):
-        x = 0
-        platoon_yaml = []
-        platoon_yaml.append("%s_%s:" % (country_code, platoon_type))
-        for squad in platoon:
-            platoon_yaml.append("    Squad_%s:" % (x +  1))
-            for character in squad:
-                for key in character:
-                    if key == 'name':
-                        platoon_yaml.append("        - %s: %s" % (key, character[key]))
-                    else:
-                        platoon_yaml.append("          %s: %s" % (key, character[key]))
-            x += 1
-        self.write_yaml(platoon_yaml)
-        return(platoon_yaml)
-
-    def write_yaml(self, data):
-        with open(self.yaml_file, "w") as f:
-            for item in data:
-                f.write("%s\n" % item)
-        f.close()
 
 class GenerateHTML:
 
@@ -261,44 +233,59 @@ class GenerateUserInterface:
 
 
 class ManageFiles:
-    def __init__(self):
-        pass
+    def __init__(self, directory):
+        self.directory = directory
 
-    def check_overwrite(self, file):
-        if os.path.exists(file):
-            inp = input("File exists, do you want to overwrite? (y/n): ")
+
+    def check_overwrite(self, file_path):
+        if os.path.exists(file_path):
+            inp = input("File exists %s\n Do you want to overwrite? (y/n): " % file_path)
             if inp == 'y' or inp == 'yes':
                 return(1)
             else:
                 return
-                
+        else:
+            return(1)
 
-
-    def save_file(self, file_name):
-        while True:
-            directory = input("Enter a directory to save files: ")
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-
-            yaml_file = os.path.join(directory, file_name + ".yaml")
-            html_file = os.path.join(directory, file_name + ".html")
-            if self.check_overwrite(yaml_file):
-                write_yaml(yaml_file)
-                write_html(html_file)
+    def save_file(self, save_file, file_content):
+        try:
+            if not os.path.exists(self.directory):
+                os.makedirs(self.directory)
+#            html_file = os.path.join(directory, file_name + ".html")
+            # check to see if file is an overwrite
+            # if the file exist
+            #      check if the user wishes to overwrite the existing file
+            file_path = os.path.abspath(save_file)
+            if self.check_overwrite(file_path):
+                with open(save_file, "w") as f:
+                    for line in file_content:
+                        f.write("%s\n" % line)
+                f.close()
+                print("wrote to file: %s" % file_path)
+                input("Press any key to exit")
+                sys.exit()
+            
+        except (PermissionError, FileNotFoundError):
+            print("Permission denied writing file to %s\n" % save_file)
+            input("Press any key to exit")
+            sys.exit()
             
 
-#            if os.path.exists(yaml_file):
-#                print("File exists, do you want to overwrite (y/n: ")
-#                if 
-#                 or os.path.exists(html_file):
-#                print("Files %s or %s already exist.  Will not over write." % (yaml_file, html_file))
-#                print("Move or delete these files manaually first")
-#                input("Press any key to quit")
-#                sys.exit()
-#            else:
-#                return(yaml_file, html_file)
-#
-            
+    def write_yaml(self, content_dict, yaml_header, section_title='squad', entry_title='name'):
+        x = 0
+        content_yaml = []
+        content_yaml.append(yaml_header)
+        for section in content_dict:
+            content_yaml.append("    %s_%s:" % (section_title, x + 1))
+            for entry in section:
+                for key in entry:
+                    if key == entry_title:
+                        content_yaml.append("        - %s: %s" % (key, entry[key]))
+                    else:
+                        content_yaml.append("          %s: %s" % (key, entry[key]))
+            x += 1
+        yaml_file = os.path.join(self.directory, yaml_header + ".yaml")
+        self.save_file(yaml_file, content_yaml)
 
 
 class GenerateMenu:
@@ -342,7 +329,13 @@ if __name__ == "__main__":
     menu_choice = gen_menu.menu_ui(top_level)
     if menu_choice == "Generate New Platoon":
         country_code = get_country_code()
-        gen_menu.menu_ui(platoon_types[country_code])
+        platoon_type = gen_menu.menu_ui(platoon_types[country_code])
+        gen_platoon = GeneratePlatoon(country_code, platoon_type)
+        platoon = gen_platoon.get_platoon()
+        header = ("%s_%s" % (country_code, platoon_type))
+        directory = ("platoons/%s" %  country_code)
+        man_files = ManageFiles(directory)
+        man_files.write_yaml(platoon, header)
 
 
     

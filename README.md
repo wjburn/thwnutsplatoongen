@@ -27,24 +27,11 @@ found in yaml_maps/names_first_xx.yaml and names_last_xx.yaml
 
 #### Usage
 
-    make sure the directory C:\thw_nuts_platoons\ exists or specify a different directory
-
-    python squad_generator.py --country-code=us --file-name=C:\thw_nuts_platoons\us_infantry_platoon
-
-    --country-code=us 
-        required  options: us(United States), ge(German), br(British), ru(Russian)
-    --platoon-type=Infantry
-        defaults to Infantry, 
-            options: 
-                us: Infantry, Paratroopers, Rangers, Armored_Infantry
-                ge: Infantry, Volks_Grenadiers, Airborne
-                br: Infantry, Paratroopers
-                ru: Infantry, SMG, Tank_Riders
-    --file-name=C:\thw_nuts_platoons\us_infantry_platoon
-        set this to where ever you would like the platoon files saved.  Two files will be created, a yaml file and an html file.  
-        The yaml file is used for future features.  The HTML file can be opened with a browser and printed for game use.
-
-
+    Make sure to extract the zip file to the directory you want to save your files
+    You will be prompted to select a country and then a platoon type
+    After this two files will be written an HTML file and a YAML file
+    The HTML file is inteded to be printed and used for the NUTS game
+    
 ### TODO:
     - enable status to be updated
 

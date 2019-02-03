@@ -159,53 +159,6 @@ class GeneratePlatoon(GenerateCharacter):
             squad_members.append(character)
         return(squad_members)
 
-class GenerateHTML:
-
-    def __init__(self, yaml_file, html_file):
-        self.html_file = html_file
-        self.yaml_file = yaml_file
-    
-    def write_html(self):
-        with open(self.yaml_file) as f:
-            yaml_map = yaml.load(f)
-        f.close()
-
-        html_data = []
-        for key in yaml_map:
-            html_data.append("<html>\n<body>\n")
-            html_data.append("<style>\ntable {\nfont-family: arial, sans-serif;\nborder-collapse: collapse;\n  width: 100%;\n}\n")
-            html_data.append("td, th {\n  border: 3px solid #dddddd;\n text-align: left;\n  padding: 2px;\nvertical-align: bottom;\n}\n")
-            html_data.append("tr:nth-child(even) {\n  background-color: #dddddd;\n}\n")
-            html_data.append("</style>\n</head>\n<body>\n")
-            html_data.append("<B>%s</B><p>\n" % key)
-            html_data.append("<table>\n")
-            for sub_key1 in yaml_map[key]:
-                html_data.append("<tr>\n")
-                html_data.append("<th width=\"1px\">%s</th>\n" % sub_key1)
-                html_data.append("<th>Name</th>\n")
-                html_data.append("<th>Role</th>\n")
-                html_data.append("<th>Rep</th>\n")
-                html_data.append("<th>Attribute</th>\n")
-                html_data.append("<th>Status</th>\n")
-                html_data.append("</tr>\n")
-                x = 1
-                for value in yaml_map[key][sub_key1]:
-                    html_data.append("<tr>\n")
-                    html_data.append("<td>%s</td>" % x)
-                    html_data.append("<td>%s</td>\n" % value['name'])
-                    html_data.append("<td>%s</td>\n" % value['role'])
-                    html_data.append("<td>%s</td>\n" % value['rep'])
-                    html_data.append("<td>%s</td>\n" % value['attribute'])
-                    html_data.append("<td>%s</td>\n" % value['status'])
-                    html_data.append("</tr>\n")
-                    x += 1
-        html_data.append("</table>\n")
-        html_data.append("</body>\n")
-        html_data.append("</html>\n")
-        with open(self.html_file, "w") as f:
-            for line in html_data:
-                    f.write(line)
-        f.close()
 
 class GenerateUserInterface:
 
@@ -235,46 +188,53 @@ class GenerateUserInterface:
 class ManageFiles:
     def __init__(self, directory):
         self.directory = directory
+        self.yaml_file = os.path.join(directory, header + ".yaml")
+        self.html_file = os.path.join(directory, header + ".html")
 
 
-    def check_overwrite(self, file_path):
-        if os.path.exists(file_path):
-            inp = input("File exists %s\n Do you want to overwrite? (y/n): " % file_path)
-            if inp == 'y' or inp == 'yes':
-                return(1)
-            else:
-                return
-        else:
-            return(1)
-
-    def save_file(self, save_file, file_content):
+    def check_yaml_overwrite(self):
         try:
             if not os.path.exists(self.directory):
                 os.makedirs(self.directory)
-#            html_file = os.path.join(directory, file_name + ".html")
             # check to see if file is an overwrite
-            # if the file exist
-            #      check if the user wishes to overwrite the existing file
-            file_path = os.path.abspath(save_file)
-            if self.check_overwrite(file_path):
-                with open(save_file, "w") as f:
-                    for line in file_content:
-                        f.write("%s\n" % line)
-                f.close()
-                print("wrote to file: %s" % file_path)
-                input("Press any key to exit")
-                sys.exit()
+            file_path = os.path.abspath(self.yaml_file)
+            if os.path.exists(file_path):
+                inp = input("File exists %s\n Do you want to overwrite? (y/n): " % file_path)
+                if inp == 'y' or inp == 'yes':
+                    return(1)
+                else:
+                    return
+            else:
+                return(1)
+        except (PermissionError, FileNotFoundError):
+            print("Permission denied writing file to %s\n" % file_path)
+            input("Press any key to exit")
+            sys.exit()
+        
+    def write_files(self, content, header):
+        self.write_yaml(content, header)
+        self.write_html()
             
+
+    def save_file(self, save_file, file_content):
+        try:
+            with open(save_file, "w") as f:
+                for line in file_content:
+                    f.write("%s\n" % line)
+            f.close()
+            file_path = os.path.abspath(save_file)
+            print("wrote to file: %s" % file_path)
+            input("Press any key")
         except (PermissionError, FileNotFoundError):
             print("Permission denied writing file to %s\n" % save_file)
             input("Press any key to exit")
             sys.exit()
             
 
-    def write_yaml(self, content_dict, yaml_header, section_title='squad', entry_title='name'):
+    def write_yaml(self, content_dict, header, section_title='squad', entry_title='name'):
         x = 0
         content_yaml = []
-        content_yaml.append(yaml_header)
+        content_yaml.append("%s:" % header)
         for section in content_dict:
             content_yaml.append("    %s_%s:" % (section_title, x + 1))
             for entry in section:
@@ -284,8 +244,50 @@ class ManageFiles:
                     else:
                         content_yaml.append("          %s: %s" % (key, entry[key]))
             x += 1
-        yaml_file = os.path.join(self.directory, yaml_header + ".yaml")
-        self.save_file(yaml_file, content_yaml)
+        
+        self.save_file(self.yaml_file, content_yaml)
+        return(self.yaml_file)
+
+    def write_html(self):
+        with open(self.yaml_file) as f:
+            yaml_map = yaml.load(f)
+        f.close()
+
+        content_html = []
+        for key in yaml_map:
+            content_html.append("<html>\n<body>\n")
+            content_html.append("<style>\ntable {\nfont-family: arial, sans-serif;\nborder-collapse: collapse;\n  width: 100%;\n}\n")
+            content_html.append("td, th {\n  border: 3px solid #dddddd;\n text-align: left;\n  padding: 2px;\nvertical-align: bottom;\n}\n")
+            content_html.append("tr:nth-child(even) {\n  background-color: #dddddd;\n}\n")
+            content_html.append("</style>\n</head>\n<body>\n")
+            content_html.append("<B>%s</B><p>\n" % key)
+            content_html.append("<table>\n")
+            for sub_key1 in yaml_map[key]:
+                content_html.append("<tr>\n")
+                content_html.append("<th width=\"1px\">%s</th>\n" % sub_key1)
+                content_html.append("<th>Name</th>\n")
+                content_html.append("<th>Role</th>\n")
+                content_html.append("<th>Rep</th>\n")
+                content_html.append("<th>Attribute</th>\n")
+                content_html.append("<th>Status</th>\n")
+                content_html.append("</tr>\n")
+                x = 1
+                for value in yaml_map[key][sub_key1]:
+                    content_html.append("<tr>\n")
+                    content_html.append("<td>%s</td>" % x)
+                    content_html.append("<td>%s</td>\n" % value['name'])
+                    content_html.append("<td>%s</td>\n" % value['role'])
+                    content_html.append("<td>%s</td>\n" % value['rep'])
+                    content_html.append("<td>%s</td>\n" % value['attribute'])
+                    content_html.append("<td>%s</td>\n" % value['status'])
+                    content_html.append("</tr>\n")
+                    x += 1
+        content_html.append("</table>\n")
+        content_html.append("</body>\n")
+        content_html.append("</html>\n")
+
+        self.save_file(self.html_file, content_html)
+
 
 
 class GenerateMenu:
@@ -293,16 +295,24 @@ class GenerateMenu:
         pass
 
     def menu_ui(self, menu_items):
-        for item in range(len(menu_items)):
-            print(str(item+1) + ":", menu_items[item])
-        inp = int(input("Enter a numeric value: "))
-        return(menu_items[inp-1])
+        while True:
+            try:
+                for item in range(len(menu_items)):
+                    print(str(item+1) + ":", menu_items[item])
+                inp = int(input("Enter a numeric value: "))
+                if inp-1 in range(len(menu_items)):
+                    return(menu_items[inp-1])
+                else:
+                    print("Invalid Menu Option")
+            except ValueError:
+                print("Invalid Input, use numeric values")
+
 
 
 if __name__ == "__main__":
     top_level = [
         "Generate New Platoon",
-        "Update Existing Platoon",
+    #    "Update Existing Platoon",
     ]
 
     country_codes = {
@@ -326,8 +336,9 @@ if __name__ == "__main__":
         return(country_codes[gen_menu.menu_ui(country_list)])
 
     gen_menu = GenerateMenu()
-    menu_choice = gen_menu.menu_ui(top_level)
-    if menu_choice == "Generate New Platoon":
+#    menu_choice = gen_menu.menu_ui(top_level)
+#    if menu_choice == "Generate New Platoon":
+    try:
         country_code = get_country_code()
         platoon_type = gen_menu.menu_ui(platoon_types[country_code])
         gen_platoon = GeneratePlatoon(country_code, platoon_type)
@@ -335,36 +346,7 @@ if __name__ == "__main__":
         header = ("%s_%s" % (country_code, platoon_type))
         directory = ("platoons/%s" %  country_code)
         man_files = ManageFiles(directory)
-        man_files.write_yaml(platoon, header)
-
-
-    
-
-
-#    if not args.country_code:
-#        args.country_code = gen_ui.countries_menu()
-#    if not args.platoon_type:
-#        args.platoon_type = gen_ui.platoon_menu(args.country_code)
-#    if not args.file_name:
-#        (yaml_file, html_file) = gen_ui.file_menu(args.country_code, args.platoon_type)
-#    else:
-#       yaml_file = args.file_name + ".yaml"
-#       html_file = args.file_name + ".html"
-#
-#            
-#
-#
-#    #generate a new platoon based on country code and platoon type
-#    gen_platoon = GeneratePlatoon(args.country_code, args.platoon_type)
-#    platoon = gen_platoon.get_platoon()
-#
-#    #using the platoon output from above, parse the data into yaml format and store to a file
-#    gen_yaml = GenerateYaml(yaml_file)
-#    platoon_yaml = gen_yaml.write_platoon(platoon, args.country_code, args.platoon_type)
-#
-#    #using the above generated yaml file, create an html file for user consumption
-#    gen_html = GenerateHTML(yaml_file, html_file)
-#    gen_html.write_html()
-#
-#    print("You can find your html file here: %s" % html_file)
-#    input("Press any key to exit")
+        man_files.check_yaml_overwrite()
+        man_files.write_files(platoon, header)
+    except FileNotFoundError as e:
+        print(str(e))

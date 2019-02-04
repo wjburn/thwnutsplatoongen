@@ -10,54 +10,22 @@ class DefineMaps:
 
     def __init__(self, country):
         self.country = country
-        self.first_names_map = {
-            'us': 'yaml_maps/names_first_us.yaml',
-            'ge': 'yaml_maps/names_first_ge.yaml',
-            'br': 'yaml_maps/names_first_br.yaml',
-            'ru': 'yaml_maps/names_first_ru.yaml',
-        }
-        self.last_names_map = {
-            'us': 'yaml_maps/names_last_us.yaml',
-            'ge': 'yaml_maps/names_last_ge.yaml',
-            'br': 'yaml_maps/names_last_br.yaml',
-            'ru': 'yaml_maps/names_last_ru.yaml',
-        }
-        self.platoon_map = {
-            'us': 'yaml_maps/squad_map_us.yaml',
-            'ge': 'yaml_maps/squad_map_ge.yaml',
-            'br': 'yaml_maps/squad_map_br.yaml',
-            'ru': 'yaml_maps/squad_map_ru.yaml',
-        }
-        self.rep_map = {
+        self.first_name_yaml = "yaml_maps/names_first_" + country  + ".yaml"
+        self.last_name_yaml  = "yaml_maps/names_last_" + country + ".yaml"
+        self.platoon_yaml    = "yaml_maps/squad_map_" + country + ".yaml"
+        self.attribute_yaml  = 'yaml_maps/attribute_map.yaml'
+
+        self.rep_dict = {
             'us': [3,3,4,4,4,5],
             'br': [3,4,4,4,4,5],
             'ge': [3,4,4,4,5,5],
             'ru': [3,3,4,4,4,5],
         }
-        self.attribute_map = 'yaml_maps/attribute_map.yaml'
-
-    def load_attributes(self):
-        self.attribute_dict = self.load_yaml_files(self.attribute_map)
-        return(self.attribute_dict)
-    
-    def load_names(self):
-        self.first_name_dict = self.load_yaml_files(self.first_names_map[self.country])
-        self.last_name_dict  = self.load_yaml_files(self.last_names_map[self.country])
-        return(self.first_name_dict, self.last_name_dict)
-    
-    def load_platoons(self):
-        self.platoon_dict = self.load_yaml_files(self.platoon_map[self.country])
-        return(self.platoon_dict)
-
-    def load_reps(self):
-        self.rep_list = self.rep_map[self.country]
-        return(self.rep_list)
 
     def load_yaml_files(self, map):
         with open(map) as f:
             return(yaml.load(f))
         f.close()
-
 
 class RollDice:
     def __init__(self):
@@ -73,9 +41,10 @@ class RollDice:
 class GenerateCharacter(DefineMaps):
     def __init__(self, country):
         DefineMaps.__init__(self, country)
-        self.attribute_dict = self.load_attributes()
-        self.load_names     = self.load_names()
-        self.load_reps      = self.load_reps()
+        self.attribute_dict  = self.load_yaml_files(self.attribute_yaml)
+        self.rep_list        = self.rep_dict[country]
+        self.first_name_dict = self.load_yaml_files(self.first_name_yaml)
+        self.last_name_dict  = self.load_yaml_files(self.last_name_yaml)
         roll_dice = RollDice()
         self.roll_d6 = roll_dice.roll_d6()
 
@@ -104,13 +73,36 @@ class GenerateCharacter(DefineMaps):
         rep_val -= 1
         return(self.rep_list[rep_val])
 
+    def get_character(self, role, **kwargs):
+        rep = kwargs.get('rep', self.get_rep())
+        character = {
+            'name': "%s, %s" % (self.get_last_name(), self.get_first_name()),
+            'role': role,
+            'rep': rep,
+            'attribute':  self.get_attribute(),
+            'status': 'active'
+        }
+        return(character)
+        
+
+
+#class GenerateReplacements(GenerateCharacter):
+#    
+#    def __init__(self, yaml_file):
+#        DefineMaps.__init__(self, country)
+#        GenerateCharacter.__init__(self, country)
+#        self.platoon_dict = self.load_yaml_files(self.platoon_yaml)
+#        roll_dice = RollDice()
+#        self.roll_d6 = roll_dice.roll_d6
+#        self.yaml_file = yaml_file
+
 
 class GeneratePlatoon(GenerateCharacter):
 
     def __init__(self, country, platoon_type):
         DefineMaps.__init__(self, country)
         GenerateCharacter.__init__(self, country)
-        self.platoon_dict = self.load_platoons()
+        self.platoon_dict = self.load_yaml_files(self.platoon_yaml)
         self.platoon_type = platoon_type
         roll_dice = RollDice()
         self.roll_d6 = roll_dice.roll_d6
@@ -142,21 +134,11 @@ class GeneratePlatoon(GenerateCharacter):
             squad_size = self.platoon_dict[self.platoon_type]['max']
         #assign a role to each character and remove 1 from the role value, ensuring that the correct number of roles are assigned per squad
         for x in range(squad_size):
-            for key, value in roles.items():
+            for key in roles:
                 if roles[key] > 0:
                     role = key
+                    squad_members.append(self.get_character(role))
                     roles[key] -= 1
-                    break
-
-        #each character has, (last_name,first_name/role/attribute/rep/status)
-            character = {
-                'name': "%s, %s" % (self.get_last_name(), self.get_first_name()),
-                'role': role,
-                'rep': self.get_rep(),
-                'attribute':  self.get_attribute(),
-                'status': 'active'
-            }
-            squad_members.append(character)
         return(squad_members)
 
 
@@ -312,7 +294,7 @@ class GenerateMenu:
 if __name__ == "__main__":
     top_level = [
         "Generate New Platoon",
-    #    "Update Existing Platoon",
+        "Update Existing Platoon",
     ]
 
     country_codes = {
@@ -336,17 +318,17 @@ if __name__ == "__main__":
         return(country_codes[gen_menu.menu_ui(country_list)])
 
     gen_menu = GenerateMenu()
-#    menu_choice = gen_menu.menu_ui(top_level)
-#    if menu_choice == "Generate New Platoon":
-    try:
-        country_code = get_country_code()
-        platoon_type = gen_menu.menu_ui(platoon_types[country_code])
-        gen_platoon = GeneratePlatoon(country_code, platoon_type)
-        platoon = gen_platoon.get_platoon()
-        header = ("%s_%s" % (country_code, platoon_type))
-        directory = ("platoons/%s" %  country_code)
-        man_files = ManageFiles(directory)
-        man_files.check_yaml_overwrite()
-        man_files.write_files(platoon, header)
-    except FileNotFoundError as e:
-        print(str(e))
+    menu_choice = gen_menu.menu_ui(top_level)
+    if menu_choice == "Generate New Platoon":
+        try:
+            country_code = get_country_code()
+            platoon_type = gen_menu.menu_ui(platoon_types[country_code])
+            gen_platoon = GeneratePlatoon(country_code, platoon_type)
+            platoon = gen_platoon.get_platoon()
+            header = ("%s_%s" % (country_code, platoon_type))
+            directory = ("platoons/%s" %  country_code)
+            man_files = ManageFiles(directory)
+            man_files.check_yaml_overwrite()
+            man_files.write_files(platoon, header)
+        except FileNotFoundError as e:
+            print(str(e))

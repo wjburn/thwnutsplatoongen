@@ -32,10 +32,3 @@ found in yaml_maps/names_first_xx.yaml and names_last_xx.yaml
     After this two files will be written an HTML file and a YAML file
     The HTML file is inteded to be printed and used for the NUTS game
     
-### TODO:
-    - enable status to be updated
-
-    - add replacements to the squad
-
-    - allow NCOs and Jr. NCOs to be replaced per NUTS rules
-    

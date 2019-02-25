@@ -357,7 +357,7 @@ class GenerateMenu:
 if __name__ == "__main__":
     top_level = [
         "Generate New Platoon",
-        "Update Existing Platoon",
+  #      "Update Existing Platoon",
     ]
 
     country_codes = {

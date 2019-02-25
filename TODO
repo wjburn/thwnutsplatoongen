@@ -9,3 +9,5 @@ menu to allow multiple status updates for members and squads
 write changes to separate yaml files based on status update
 
 generate replacements for squads
+
+break script into modules

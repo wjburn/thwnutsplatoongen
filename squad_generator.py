@@ -100,6 +100,23 @@ class UpdatePlatoon(GenerateCharacter):
         self.top_key = "%s_%s" % (self.country, self.platoon_type)
         roll_dice = RollDice()
         self.roll_d6 = roll_dice.roll_d6
+    
+    def update_squad(self):
+        while True:
+            squad_num = self.get_squad()
+            while True:
+                squad_member_id = self.get_squad_member(squad_num)
+                status = self.get_member_status()
+                self.update_member_status(squad_num, squad_member_id, status)
+                cont_member_loop =  input("Update another member of this squad(y/n): ")
+                if cont_member_loop is not 'y':
+                   break 
+            cont_squad_loop = input("Update another squad(y/n): ")
+            if cont_squad_loop is not 'y':
+                break
+            return
+            
+
 
     def get_squad(self):
         squads = []
@@ -122,7 +139,7 @@ class UpdatePlatoon(GenerateCharacter):
         return(status)
 
     def update_member_status(self, squad_num, squad_member_id, member_status):
-        self.yaml_map[self.top_key][squad_num][squad_member_id]['status'] = status
+        self.yaml_map[self.top_key][squad_num][squad_member_id]['status'] = member_status
         print(squad_member_id)
         print(self.yaml_map[self.top_key][squad_num][squad_member_id])
 
@@ -368,24 +385,20 @@ if __name__ == "__main__":
     gen_menu = GenerateMenu()
     menu_choice = gen_menu.menu_ui(top_level)
     if menu_choice == "Generate New Platoon":
-      country_code = get_country_code()
-      platoon_type = gen_menu.menu_ui(platoon_types[country_code])
-      gen_platoon = GeneratePlatoon(country_code, platoon_type)
-      platoon = gen_platoon.get_platoon()
-      man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type) )
-      man_files.check_yaml_overwrite()
-      man_files.write_files(platoon)
+        country_code = get_country_code()
+        platoon_type = gen_menu.menu_ui(platoon_types[country_code])
+        gen_platoon = GeneratePlatoon(country_code, platoon_type)
+        platoon = gen_platoon.get_platoon()
+        man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type) )
+        man_files.check_yaml_overwrite()
+        man_files.write_files(platoon)
     elif menu_choice ==  "Update Existing Platoon":
-      country_code = get_country_code()
-      platoon_type = gen_menu.menu_ui(platoon_types[country_code])
-      man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type))
-      yaml_map = man_files.get_yaml()
-      update_status = UpdatePlatoon(country_code, platoon_type, yaml_map)
-      squad_num = update_status.get_squad()
-      squad_member_id = update_status.get_squad_member(squad_num)
-      status = update_status.get_member_status()
-      update_status.update_member_status(squad_num, squad_member_id, status)
-
+        country_code = get_country_code()
+        platoon_type = gen_menu.menu_ui(platoon_types[country_code])
+        man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type))
+        yaml_map = man_files.get_yaml()
+        update_status = UpdatePlatoon(country_code, platoon_type, yaml_map)
+        update_status.update_squad()
 
 
 

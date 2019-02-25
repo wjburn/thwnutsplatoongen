@@ -1,0 +1,11 @@
+bug in over writing files that when answer is no
+
+add exit menu option to menu ui, allowing menu to break current loop
+
+remove non-active squad members from existing yaml
+
+menu to allow multiple status updates for members and squads
+
+write changes to separate yaml files based on status update
+
+generate replacements for squads

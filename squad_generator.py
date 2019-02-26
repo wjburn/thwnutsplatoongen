@@ -49,8 +49,8 @@ if __name__ == "__main__":
     menu_choice = menu.menu_ui(top_level)
     if menu_choice == "Generate New Platoon":
         platoon_generation = manage_platoons.GeneratePlatoon()
-        platoon_generation.get_platoon()
-
+        platoon_generation.set_roles()
+        platoon_generation.set_member_attributes()
         
 #        gen_platoon = GeneratePlatoon(country_code, platoon_type)
 #        platoon = gen_platoon.get_platoon()

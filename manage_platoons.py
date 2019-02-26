@@ -1,4 +1,4 @@
-from manage_characters import GenerateCharacter
+import generate_character_attributes
 import manage_files
 import manage_ui
 import sys
@@ -35,6 +35,8 @@ class PlatoonMeta:
         try:
             self.platoon_map = self.file_management.load_yaml('squad_map_' + self.country_code)
             platoon_attributes = self.platoon_map[self.platoon_type]
+            platoon_attributes['country_code'] = self.country_code
+            platoon_attributes['platoon_type'] = self.platoon_type
         except KeyError as e:
             print(str(e))
             return
@@ -46,10 +48,11 @@ class GeneratePlatoon(PlatoonMeta):
         self.dice_bag = roll_dice.RollDice()
         self.platoon_meta = PlatoonMeta()
         self.platoon_attributes = self.platoon_meta.get_attributes()
+        self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
+        self.platoon_roles = []
 
 
-    def get_platoon(self):
-        squads = []
+    def set_roles(self):
         #number of squads in a platoon
         for squad_number in range(int(self.platoon_attributes['squad_per_platoon'])):
             #squad size is the base_size + add_d6 roll
@@ -64,8 +67,14 @@ class GeneratePlatoon(PlatoonMeta):
                     if squad_size > 0:
                         squad_members.append(key)
                         squad_size -= 1
-            squads.append(squad_members)
-        print(squads[1])
+            self.platoon_roles.append(squad_members)
+
+    def set_member_attributes(self):
+        for squads in self.platoon_roles:
+            for role in squads:
+                attributes = self.character_attributes.get_attributes(role)
+                print(attributes)
+
 
 
 # class UpdatePlatoon(GenerateCharacter):

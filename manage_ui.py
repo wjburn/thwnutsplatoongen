@@ -1,5 +1,5 @@
 
-class GenerateMenu:
+class MenuManagement:
     def __init__(self):
         pass
 

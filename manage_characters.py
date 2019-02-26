@@ -1,11 +1,24 @@
+from roll_dice import RollDice
+import manage_files
 
-class GenerateCharacter(DefineMaps):
+class GenerateCharacter:
     def __init__(self, country):
-        DefineMaps.__init__(self, country)
-        self.attribute_dict  = self.load_yaml_files(self.attribute_yaml)
+        self.country         = country
+        self.first_name_yaml = "yaml_maps/names_first_" + country  + ".yaml"
+        self.last_name_yaml  = "yaml_maps/names_last_" + country + ".yaml"
+        self.platoon_yaml    = "yaml_maps/squad_map_" + country + ".yaml"
+        self.attribute_yaml  = 'yaml_maps/attribute_map.yaml'
+
+        self.rep_dict = {
+            'us': [3,3,4,4,4,5],
+            'br': [3,4,4,4,4,5],
+            'ge': [3,4,4,4,5,5],
+            'ru': [3,3,4,4,4,5],
+        }
+        self.attribute_dict  = ManageFiles.load_yaml_files(self.attribute_yaml)
         self.rep_list        = self.rep_dict[country]
-        self.first_name_dict = self.load_yaml_files(self.first_name_yaml)
-        self.last_name_dict  = self.load_yaml_files(self.last_name_yaml)
+        self.first_name_dict = ManageFiles.load_yaml_files(self.first_name_yaml)
+        self.last_name_dict  = ManageFiles.load_yaml_files(self.last_name_yaml)
         roll_dice = RollDice()
         self.roll_d6 = roll_dice.roll_d6()
 

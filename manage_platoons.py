@@ -50,6 +50,7 @@ class GeneratePlatoon(PlatoonMeta):
         self.platoon_attributes = self.platoon_meta.get_attributes()
         self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
         self.platoon_roles = []
+        self.platoon = []
 
 
     def set_roles(self):
@@ -71,9 +72,17 @@ class GeneratePlatoon(PlatoonMeta):
 
     def set_member_attributes(self):
         for squads in self.platoon_roles:
+            squad = []
             for role in squads:
-                attributes = self.character_attributes.get_attributes(role)
-                print(attributes)
+                member = self.character_attributes.get_attributes(role)
+                squad.append(member)
+            self.platoon.append(squad)
+                
+
+    def get_platoon(self):
+        self.set_roles()
+        self.set_member_attributes()
+        return(self.platoon_attributes['country_code'], self.platoon_attributes['platoon_type'], self.platoon)
 
 
 

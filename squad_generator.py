@@ -36,7 +36,7 @@ import manage_platoons
 
 
 if __name__ == "__main__":
-    top_level = [
+    main_menu = [
         "Generate New Platoon",
   #      "Update Existing Platoon",
     ]
@@ -46,11 +46,11 @@ if __name__ == "__main__":
 
     menu = manage_ui.MenuManagement()
 
-    menu_choice = menu.menu_ui(top_level)
+    menu_choice = menu.menu_ui(main_menu)
     if menu_choice == "Generate New Platoon":
         platoon_generation = manage_platoons.GeneratePlatoon()
-        platoon_generation.set_roles()
-        platoon_generation.set_member_attributes()
+        (country_code, platoon_type, platoon) = platoon_generation.get_platoon()
+
         
 #        gen_platoon = GeneratePlatoon(country_code, platoon_type)
 #        platoon = gen_platoon.get_platoon()

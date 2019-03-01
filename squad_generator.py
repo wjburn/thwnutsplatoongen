@@ -51,8 +51,8 @@ if __name__ == "__main__":
     if menu_choice == "Generate New Platoon":
         platoon_generation = manage_platoons.GeneratePlatoon()
         (country_code, platoon_type, platoon) = platoon_generation.get_platoon()
-        file_generation = manage_files.GenerateContent(country_code + "_" + platoon_type, platoon)
-        file_generation.write_platoon()
+        file_generation = manage_files.GenerateContent(country_code, platoon_type, platoon)
+        file_generation.write_platoon_files()
 
         
 #        gen_platoon = GeneratePlatoon(country_code, platoon_type)

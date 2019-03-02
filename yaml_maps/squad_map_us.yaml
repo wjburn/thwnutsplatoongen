@@ -1,44 +1,48 @@
 Infantry:
-  base: 7
-  d6: 1
-  max: 12
-  platoon: 3
-  NCO: 1
-  JrNCO: 1
-  LMG: 1
-  LMG_Assist: 0
-  SA_Gerenade_Rifle: 2
-  Rifle: 7
+  base_size: 7
+  add_d6: 1
+  max_squad_size: 12
+  squad_per_platoon: 3
+  roles:
+    NCO: 1
+    JrNCO: 1
+    LMG: 1
+    LMG_Assist: 0
+    SA_Gerenade: 2
+    Rifle: 7
 Paratroopers:
-  base: 6
-  d6: 1
-  max: 12
-  platoon: 3
-  NCO: 1
-  JrNCO: 1
-  LMG: 1
-  LMG_Assist: 1
-  SA_Gerenade_Rifle: 1
-  Rifle: 7
+  base_size: 6
+  add_d6: 1
+  max_squad_size: 12
+  squad_per_platoon: 3
+  roles:
+    NCO: 1
+    JrNCO: 1
+    LMG: 1
+    LMG_Assist: 1
+    SA_Gerenade: 1
+    Rifle: 7
 Rangers:
-  base: 6
-  d6: 1
-  max: 11
-  platoon: 2
-  NCO: 1
-  JrNCO: 1
-  LMG: 1
-  LMG_Assist: 1
-  SA_Gerenade_Rifle: 1
-  Rifle: 7
+  base_size: 6
+  add_d6: 1
+  max_squad_size: 11
+  squad_per_platoon: 2
+  roles:
+    NCO: 1
+    JrNCO: 1
+    LMG: 1
+    LMG_Assist: 1
+    SA_Gerenade: 1
+    Rifle: 7
 Armored_Infantry:
-  base: 7
-  d6: 1
-  max: 12
-  platoon: 3
-  NCO: 1
-  JrNCO: 1
-  LMG: 1
-  LMG_Assist: 0
-  SA_Gerenade_Rifle: 0
-  Rifle: 8
+  base_size: 7
+  add_d6: 1
+  max_squad_size: 12
+  squad_per_platoon: 3
+  roles:
+    NCO: 1
+    JrNCO: 1
+    LMG: 0
+    LMG_Assist: 0
+    SA_Gerenade: 0
+    Rifle: 10

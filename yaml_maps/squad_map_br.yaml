@@ -1,22 +1,24 @@
 Infantry:
-  base: 5
-  d6: 1
-  max: 10
-  platoon: 3
-  NCO: 1
-  JrNCO: 1
-  LMG: 1
-  LMG_Assist: 1
-  SA_Gerenade_Rifle: 0
-  Rifle: 7
+  base_size: 5
+  add_d6: 1
+  max_squad_size: 10
+  squad_per_platoon: 3
+  roles:
+    NCO: 1
+    JrNCO: 1
+    LMG: 1
+    LMG_Assist: 1
+    SA_Gerenade: 1
+    Rifle: 5
 Paratroopers:
-  base: 7
-  d6: 1
-  max: 10
-  platoon: 3
-  NCO: 1
-  JrNCO: 1
-  LMG: 1
-  LMG_Assist: 1
-  SA_Gerenade_Rifle: 0
-  Rifle: 6
+  base_size: 7
+  add_d6: 1
+  max_squad_size: 10
+  squad_per_platoon: 3
+  roles:
+    NCO: 1
+    JrNCO: 1
+    LMG: 1
+    LMG_Assist: 1
+    SA_Gerenade: 0
+    Rifle: 6

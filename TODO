@@ -1,4 +1,4 @@
-bug in over writing files that when answer is no
+
 
 add exit menu option to menu ui, allowing menu to break current loop
 
@@ -10,4 +10,3 @@ write changes to separate yaml files based on status update
 
 generate replacements for squads
 
-break script into modules

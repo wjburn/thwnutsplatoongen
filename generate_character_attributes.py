@@ -1,14 +1,16 @@
 import roll_dice
 import manage_files
+import os
 
 class GenerateCharacter:
     def __init__(self, country_code):
         self.dice_bag        = roll_dice.RollDice()
         self.file_management = manage_files.FileManagement()
-        self.first_name_yaml = "names_first_" + country_code
-        self.last_name_yaml  = "names_last_" + country_code
-        self.platoon_yaml    = "squad_map_" + country_code
-        self.attribute_yaml  = "attribute_map"
+        self.map_dir         = 'yaml_maps'
+        self.first_name_yaml = os.path.join(self.map_dir, "names_first_" + country_code + ".yaml")
+        self.last_name_yaml  = os.path.join(self.map_dir, "names_last_" + country_code + ".yaml")
+        self.platoon_yaml    = os.path.join(self.map_dir, "squad_map_" + country_code + ".yaml")
+        self.attribute_yaml  = os.path.join(self.map_dir, "attribute_map.yaml")
 
         self.rep_dict = {
             'us': [3,3,4,4,4,5],

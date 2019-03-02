@@ -3,6 +3,7 @@ import manage_files
 import manage_ui
 import sys
 import roll_dice
+import os
 
 class PlatoonMeta:
     def __init__(self):
@@ -10,9 +11,10 @@ class PlatoonMeta:
         self.menu_management    = manage_ui.MenuManagement()
         self.country_code       = None
         self.platoon_type       = None
+        self.map_dir            = 'yaml_maps'
 
     def set_country_code(self):
-        country_codes = self.file_management.load_yaml('country_codes')
+        country_codes = self.file_management.load_yaml(os.path.join(self.map_dir,'country_codes' + ".yaml"))
         country_list = []
         for key in country_codes:
             country_list.append(key)
@@ -21,7 +23,7 @@ class PlatoonMeta:
 
     def set_type(self):
         try:
-            platoon_type_map = self.file_management.load_yaml('platoon_types')
+            platoon_type_map = self.file_management.load_yaml(os.path.join(self.map_dir,'platoon_types' + ".yaml"))
             self.platoon_type = self.menu_management.menu_ui(platoon_type_map[self.country_code])
         except KeyError as e:
             print(str(e))
@@ -33,7 +35,7 @@ class PlatoonMeta:
         if not self.platoon_type:
             self.set_type()
         try:
-            self.platoon_map = self.file_management.load_yaml('squad_map_' + self.country_code)
+            self.platoon_map = self.file_management.load_yaml(os.path.join(self.map_dir,'squad_map_' + self.country_code + ".yaml"))
             platoon_attributes = self.platoon_map[self.platoon_type]
             platoon_attributes['country_code'] = self.country_code
             platoon_attributes['platoon_type'] = self.platoon_type

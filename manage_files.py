@@ -3,18 +3,16 @@ import yaml
 import sys
 
 class FileManagement:
-#TODO
-#move this to generate platoon
+
     def __init__(self):
-        self.map_dir     = 'yaml_maps'
+        pass
 
 
     def file_error(self, file, error):
         print("Failed file: %s " % file + str(error))
         sys.exit()
 
-    def load_yaml(self, yaml_file):
-        file_path = os.path.join(self.map_dir, yaml_file + ".yaml")
+    def load_yaml(self, file_path):
         try:
             with open(file_path, "r") as f:
                  yaml_map = yaml.load(f)
@@ -22,7 +20,7 @@ class FileManagement:
             return(yaml_map)
 
         except (PermissionError, FileNotFoundError) as e:
-            self.file_error(yaml_file, str(e))
+            self.file_error(file_path, str(e))
 
     def check_overwrite(self, file_path):
         if os.path.exists(os.path.abspath(file_path)):
@@ -38,9 +36,9 @@ class FileManagement:
         try:
             if not os.path.exists(directory):
                 os.makedirs(directory)
-        except (PermissionError, FileNotFoundError):
+        except (PermissionError, FileNotFoundError) as e:
             self.file_error(directory, str(e))
-#TODO
+
     def write_file(self, file_path, file_content):
         file_path = os.path.abspath(file_path)
         try:
@@ -51,10 +49,9 @@ class FileManagement:
             print("wrote to file: %s" % file_path)
             input("Press the any key")
             return
-        except (PermissionError, FileNotFoundError):
+        except (PermissionError, FileNotFoundError) as e:
             self.file_error(file_path, str(e))
             
-#TODO this needs to be refactored
 class GenerateContent(FileManagement):
 
     def __init__(self, country_code, platoon_type, content, section_title='squad', entry_title='name'):
@@ -86,9 +83,9 @@ class GenerateContent(FileManagement):
 #add platoon sergeant field
 #add morale and investment level field
 #make this a dynamic table generation
-    def generate_html(self):
+    def generate_html(self, yaml_file):
         content_html = []
-        content_yaml = self.load_yaml
+        content_yaml = self.load_yaml(yaml_file)
         for key in content_yaml:
             content_html.append("<html>\n<body>\n")
             content_html.append("<style>\ntable {\nfont-family: arial, sans-serif;\nborder-collapse: collapse;\n  width: 100%;\n}\n")
@@ -124,18 +121,11 @@ class GenerateContent(FileManagement):
 
     def write_platoon_files(self):
         self.check_directory(self.directory_path)
-
-
-
-
-        if not self.check_overwrite(file_path):
-                sys.exit()
-            else:
-               file_content = file_extensions[extension]() 
-               self.write_file(file_path, file_content)
-               print(file_content)
-
-
-
-        
-    
+        if self.check_overwrite(self.yaml_file):
+            yaml_content = self.generate_yaml()
+            self.write_file(self.yaml_file, yaml_content)
+            html_content = self.generate_html(self.yaml_file)
+            self.write_file(self.html_file, html_content)
+        else:
+            print("Will not overwrite file: %s" % self.yaml_file)
+            sys.exit()

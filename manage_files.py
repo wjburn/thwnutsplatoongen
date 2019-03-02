@@ -7,7 +7,6 @@ class FileManagement:
     def __init__(self):
         pass
 
-
     def file_error(self, file, error):
         print("Failed file: %s " % file + str(error))
         sys.exit()
@@ -55,6 +54,7 @@ class FileManagement:
 class GenerateContent(FileManagement):
 
     def __init__(self, country_code, platoon_type, content, section_title='squad', entry_title='name'):
+        FileManagement.__init__(self)
         self.platoon_dir = 'platoons'
         self.country_code = country_code
         self.platoon_type = platoon_type

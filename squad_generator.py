@@ -39,7 +39,7 @@ import manage_files
 if __name__ == "__main__":
     main_menu = [
         "Generate New Platoon",
-  #      "Update Existing Platoon",
+        "Update Existing Platoon",
     ]
 
 
@@ -54,20 +54,6 @@ if __name__ == "__main__":
         file_generation = manage_files.GenerateContent(country_code, platoon_type, platoon)
         file_generation.write_platoon_files()
 
-        
-#        gen_platoon = GeneratePlatoon(country_code, platoon_type)
-#        platoon = gen_platoon.get_platoon()
-#        man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type) )
-#        man_files.check_yaml_overwrite()
-#        man_files.write_files(platoon)
-#    elif menu_choice ==  "Update Existing Platoon":
-#        country_code = get_country_code()
-#        platoon_type = gen_menu.menu_ui(platoon_types[country_code])
-#        man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type))
-#        yaml_map = man_files.get_yaml()
-#        update_status = UpdatePlatoon(country_code, platoon_type, yaml_map)
-#        update_status.update_squad()
-
-
-
-
+    elif menu_choice ==  "Update Existing Platoon":
+        update_status = manage_platoons.UpdatePlatoon()
+        update_status.update_squad()

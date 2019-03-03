@@ -29,7 +29,7 @@ class PlatoonMeta:
             print(str(e))
             return
     
-    def get_attributes(self):
+    def set_attributes(self):
         if not self.country_code:
             self.set_country_code()
         if not self.platoon_type:
@@ -48,7 +48,7 @@ class PlatoonMeta:
 class GeneratePlatoon(PlatoonMeta):
     def __init__(self):
         PlatoonMeta.__init__(self)
-        self.platoon_attributes = self.get_attributes()
+        self.platoon_attributes = self.set_attributes()
         self.dice_bag = roll_dice.RollDice()
         self.platoon_roles = []
         self.platoon = []
@@ -94,10 +94,14 @@ class UpdatePlatoon(PlatoonMeta):
     def __init__(self):
         PlatoonMeta.__init__(self)
         self.dice_bag = roll_dice.RollDice()
-        self.platoon_attributes = self.get_attributes()
+        self.platoon_attributes = self.set_attributes()
+        self.yaml_top_key = "%s_%s" % (self.platoon_attributes['country_code'], self.platoon_attributes['platoon_type'])
         self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
+        self.platoon_yaml_map = self.file_management.load_yaml(os.path.join('platoons', self.platoon_attributes['country_code'], self.platoon_attributes['country_code'] + "_" + self.platoon_attributes['platoon_type'] + ".yaml"))
         self.platoon_roles = []
         self.platoon = []
+
+    
   
     def update_squad(self):
         while True:
@@ -116,26 +120,26 @@ class UpdatePlatoon(PlatoonMeta):
 
     def get_squad(self):
         squads = []
-        for key in self.yaml_map[self.top_key]:
+        for key in self.platoon_yaml_map[self.yaml_top_key]:
             squads.append(key)
-        squad_num = self.menu.menu_ui(squads)
+        squad_num = self.menu_management.menu_ui(squads)
         return(squad_num)
   
     def get_squad_member(self, squad_num):
         squad_members = []
-        for key in self.yaml_map[self.top_key][squad_num]:
+        for key in self.platoon_yaml_map[self.yaml_top_key][squad_num]:
             squad_members.append(key)
-        squad_member_id = self.menu.menu_ui(squad_members, return_menu_val=1)
+        squad_member_id = self.menu_management.menu_ui(squad_members, return_menu_val=1)
         return(squad_member_id)
 
 
     def get_member_status(self):
         status_updates = ['active', 'pow', 'hospital', 'deceased']
-        status = self.menu.menu_ui(status_updates)
+        status = self.menu_management.menu_ui(status_updates)
         return(status)
 
     def update_member_status(self, squad_num, squad_member_id, member_status):
-        self.yaml_map[self.top_key][squad_num][squad_member_id]['status'] = member_status
+        self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]['status'] = member_status
         print(squad_member_id)
-        print(self.yaml_map[self.top_key][squad_num][squad_member_id])
+        print(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
 

@@ -56,4 +56,8 @@ if __name__ == "__main__":
 
     elif menu_choice ==  "Update Existing Platoon":
         update_status = manage_platoons.UpdatePlatoon()
-        update_status.update_squad()
+        (platoon, mia_pow, hospital, deceased) = update_status.update_platoon()
+        print("Platoon %s" % platoon)
+        print("MIA %s" % mia_pow)
+        print("Hospital %s" % hospital)
+        print("Deceased %s" % deceased)

@@ -38,10 +38,14 @@ class FileManagement:
         except (PermissionError, FileNotFoundError) as e:
             self.file_error(directory, str(e))
 
-    def write_file(self, file_path, file_content):
+    def write_file(self, file_path, file_content, append_file):
         file_path = os.path.abspath(file_path)
+        if append_file:
+            write_type = "a+"
+        else:
+            write_type = "w"
         try:
-            with open(file_path, "w") as f:
+            with open(file_path, write_type) as f:
                 for line in file_content:
                     f.write("%s\n" % line)
             f.close()
@@ -53,23 +57,20 @@ class FileManagement:
             
 class GenerateContent(FileManagement):
 
-    def __init__(self, country_code, platoon_type, content, section_title='squad', entry_title='name'):
+    def __init__(self, country_code, platoon_type, section_title='squad', entry_title='name'):
         FileManagement.__init__(self)
         self.platoon_dir = 'platoons'
         self.country_code = country_code
         self.platoon_type = platoon_type
-        self.content = content
         self.section_title = section_title
         self.entry_title = entry_title
         self.directory_path = os.path.join(self.platoon_dir, self.country_code)
-        self.yaml_file = os.path.join(self.directory_path, self.country_code + "_" + self.platoon_type + ".yaml")
-        self.html_file = os.path.join(self.directory_path, self.country_code + "_" + self.platoon_type + ".html")
 
-    def generate_yaml(self):
+    def generate_yaml(self, content):
         x = 0
         content_yaml = []
         content_yaml.append("%s_%s:" % (self.country_code, self.platoon_type))
-        for section in self.content:
+        for section in content:
             content_yaml.append("    %s_%s:" % (self.section_title, x + 1))
             for entry in section:
                 for key in entry:
@@ -119,13 +120,33 @@ class GenerateContent(FileManagement):
         content_html.append("</html>\n")
         return(content_html)
 
-    def write_platoon_files(self):
+    def new_platoon_files(self, content, file_name):
+        yaml_file = os.path.join(self.directory_path, file_name + ".yaml")
+        html_file = os.path.join(self.directory_path, file_name + ".html")
         self.check_directory(self.directory_path)
-        if self.check_overwrite(self.yaml_file):
-            yaml_content = self.generate_yaml()
-            self.write_file(self.yaml_file, yaml_content)
-            html_content = self.generate_html(self.yaml_file)
-            self.write_file(self.html_file, html_content)
+        if self.check_overwrite(yaml_file):
+            yaml_content = self.generate_yaml(content)
+            self.write_file(yaml_file, yaml_content, append_file=None)
         else:
-            print("Will not overwrite file: %s" % self.yaml_file)
+            print("Will not overwrite file: %s" % yaml_file)
             sys.exit()
+
+        html_content = self.generate_html(yaml_file)
+        self.write_file(html_file, html_content, append_file=None)
+
+    def update_platoon_files(self, yaml_content, file_name, write_html=None, append_file=None):
+        yaml_file = os.path.join(self.directory_path, file_name + ".yaml")
+        self.check_directory(self.directory_path)
+        if not append_file:
+            if self.check_overwrite(yaml_file):
+                self.write_file(yaml_file, yaml_content, append_file=None)
+            else:
+                print("Will not overwrite file: %s" % yaml_file)
+                sys.exit()
+        else:
+            self.write_file(yaml_file, yaml_content, append_file=1)
+
+        if write_html:
+            html_file = os.path.join(self.directory_path, file_name + ".html")
+            html_content = self.generate_html(yaml_file)
+            self.write_file(html_file, html_content, append_file=None)

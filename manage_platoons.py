@@ -110,18 +110,25 @@ class UpdatePlatoon(PlatoonMeta):
             squad_num = self.get_squad()
             self.update_squad(squad_num)
             continue_update_squad = input("Update another squad(y/n): ")
-            if continue_update_squad is not 'y' or continue_update_squad is not 'yes':
-                return(self.platoon_yaml_map, self.mia_pow, self.hospital, self.deceased)
+            if continue_update_squad == 'y' or continue_update_squad == 'yes':
+                continue
+            else:
+                return(self.country_code, self.platoon_type, self.platoon_yaml_map, self.mia_pow, self.hospital, self.deceased)
 
     
   
     def update_squad(self, squad_num):
         while True:
             squad_member_id = self.get_squad_member(squad_num)
-            self.set_member_status(squad_num, squad_member_id)
-            continue_update_members =  input("Update another member of this squad(y/n): ")
-            if continue_update_members is not 'y' or continue_update_members is not 'yes':
-                return 
+            if squad_member_id is not None:
+                self.set_member_status(squad_num, squad_member_id)
+                continue_update_members =  input("Update another member of this squad(y/n): ")
+                if continue_update_members == 'y' or continue_update_members == 'yes':
+                    continue
+            else:
+                print("No members left in this squad")
+            
+            return 
 
     def get_squad(self):
         squads = []
@@ -134,8 +141,11 @@ class UpdatePlatoon(PlatoonMeta):
         squad_members = []
         for key in self.platoon_yaml_map[self.yaml_top_key][squad_num]:
             squad_members.append(key)
-        squad_member_id = self.menu_management.menu_ui(squad_members, return_menu_val=1)
-        return(squad_member_id)
+        if len(squad_members) > 0:
+            squad_member_id = self.menu_management.menu_ui(squad_members, return_menu_val=1)
+            return(squad_member_id)
+        else:
+            return
 
 
     def set_member_status(self, squad_num, squad_member_id):

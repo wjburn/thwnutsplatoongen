@@ -3,7 +3,7 @@
 #import random
 #import yaml
 #import argparse
-#import os
+import os
 #import sys
 #from appJar import gui
 import manage_ui
@@ -39,7 +39,7 @@ import manage_files
 if __name__ == "__main__":
     main_menu = [
         "Generate New Platoon",
-  #      "Update Existing Platoon",
+        "Update Existing Platoon",
     ]
 
 
@@ -50,24 +50,25 @@ if __name__ == "__main__":
     menu_choice = menu.menu_ui(main_menu)
     if menu_choice == "Generate New Platoon":
         platoon_generation = manage_platoons.GeneratePlatoon()
-        (country_code, platoon_type, platoon) = platoon_generation.get_platoon()
-        file_generation = manage_files.GenerateContent(country_code, platoon_type, platoon)
-        file_generation.write_platoon_files()
+        (country_code, platoon_type, platoon_list) = platoon_generation.get_platoon()
+        file_generation = manage_files.GenerateContent(country_code, platoon_type)
+        platoon_file = "%s_%s" % (country_code, platoon_type)
+        file_generation.new_platoon_files(platoon_list, platoon_file)
 
-        
-#        gen_platoon = GeneratePlatoon(country_code, platoon_type)
-#        platoon = gen_platoon.get_platoon()
-#        man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type) )
-#        man_files.check_yaml_overwrite()
-#        man_files.write_files(platoon)
-#    elif menu_choice ==  "Update Existing Platoon":
-#        country_code = get_country_code()
-#        platoon_type = gen_menu.menu_ui(platoon_types[country_code])
-#        man_files = ManageFiles("platoons/%s" %  country_code, "%s_%s" % (country_code, platoon_type))
-#        yaml_map = man_files.get_yaml()
-#        update_status = UpdatePlatoon(country_code, platoon_type, yaml_map)
-#        update_status.update_squad()
+    elif menu_choice ==  "Update Existing Platoon":
+        update_status = manage_platoons.UpdatePlatoon()
+        (country_code, platoon_type, platoon_list, mia_list, hospital_list, deceased_list) = update_status.update_platoon()
+        print(platoon_list)
+        file_generation = manage_files.GenerateContent(country_code, platoon_type)
 
+        platoon_file = "%s_%s" % (country_code, platoon_type)
+        file_generation.write_yaml_dump(platoon_file, platoon_list)
 
+        mia_file = "%s_%s_mia" % (country_code, platoon_type)
+        file_generation.write_yaml_dump(mia_file, mia_list, append=1)
 
+        hospital_file = "%s_%s_hospital" % (country_code, platoon_type)
+        file_generation.write_yaml_dump(hospital_file, hospital_list, append=1)
 
+        deceased_file = "%s_%s_deceased" % (country_code, platoon_type)
+        file_generation.write_yaml_dump(deceased_file, deceased_list, append=1)

@@ -58,12 +58,17 @@ if __name__ == "__main__":
     elif menu_choice ==  "Update Existing Platoon":
         update_status = manage_platoons.UpdatePlatoon()
         (country_code, platoon_type, platoon_list, mia_list, hospital_list, deceased_list) = update_status.update_platoon()
+        print(platoon_list)
         file_generation = manage_files.GenerateContent(country_code, platoon_type)
+
         platoon_file = "%s_%s" % (country_code, platoon_type)
-        file_generation.update_platoon_files(platoon_list, platoon_file, write_html=1)
+        file_generation.write_yaml_dump(platoon_file, platoon_list)
+
         mia_file = "%s_%s_mia" % (country_code, platoon_type)
-        file_generation.manage_file_writes(mia_list, mia_file, append_file=1)
+        file_generation.write_yaml_dump(mia_file, mia_list, append=1)
+
         hospital_file = "%s_%s_hospital" % (country_code, platoon_type)
-        file_generation.manage_file_writes(hospital_list, hospital_file, append_file=1)
+        file_generation.write_yaml_dump(hospital_file, hospital_list, append=1)
+
         deceased_file = "%s_%s_deceased" % (country_code, platoon_type)
-        file_generation.manage_file_writes(deceased_list, deceased_file, append_file=1)
+        file_generation.write_yaml_dump(deceased_file, deceased_list, append=1)

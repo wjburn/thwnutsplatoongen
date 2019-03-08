@@ -38,8 +38,9 @@ class FileManagement:
         except (PermissionError, FileNotFoundError) as e:
             self.file_error(directory, str(e))
 
-    def write_file(self, file_path, file_content, append_file):
+    def write_file(self, file_path, file_content, append_file=None):
         file_path = os.path.abspath(file_path)
+        print(file_content)
         if append_file:
             write_type = "a+"
         else:
@@ -47,6 +48,7 @@ class FileManagement:
         try:
             with open(file_path, write_type) as f:
                 for line in file_content:
+                    print(line)
                     f.write("%s\n" % line)
             f.close()
             print("wrote to file: %s" % file_path)
@@ -54,6 +56,8 @@ class FileManagement:
             return
         except (PermissionError, FileNotFoundError) as e:
             self.file_error(file_path, str(e))
+        
+
             
 class GenerateContent(FileManagement):
 
@@ -134,19 +138,16 @@ class GenerateContent(FileManagement):
         html_content = self.generate_html(yaml_file)
         self.write_file(html_file, html_content, append_file=None)
 
-    def update_platoon_files(self, yaml_content, file_name, write_html=None, append_file=None):
+
+    def write_yaml_dump(self, file_name, yaml_content, append=None):
+        write_file = 'w'
+        if append:
+            write_file = 'a+'
         yaml_file = os.path.join(self.directory_path, file_name + ".yaml")
         self.check_directory(self.directory_path)
-        if not append_file:
-            if self.check_overwrite(yaml_file):
-                self.write_file(yaml_file, yaml_content, append_file=None)
-            else:
-                print("Will not overwrite file: %s" % yaml_file)
-                sys.exit()
-        else:
-            self.write_file(yaml_file, yaml_content, append_file=1)
+        if not append and not self.check_overwrite(yaml_file):
+            print("Will not overwrite file: %s" % yaml_file)
+            sys.exit()
 
-        if write_html:
-            html_file = os.path.join(self.directory_path, file_name + ".html")
-            html_content = self.generate_html(yaml_file)
-            self.write_file(html_file, html_content, append_file=None)
+        with open(yaml_file, write_file) as outfile:
+            yaml.dump(yaml_content, outfile, default_flow_style=False)

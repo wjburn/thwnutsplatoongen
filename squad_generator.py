@@ -40,6 +40,7 @@ if __name__ == "__main__":
     main_menu = [
         "Generate New Platoon",
         "Update Existing Platoon",
+ #       "Generate Replacements",
     ]
 
 
@@ -51,24 +52,37 @@ if __name__ == "__main__":
     if menu_choice == "Generate New Platoon":
         platoon_generation = manage_platoons.GeneratePlatoon()
         (country_code, platoon_type, platoon_list) = platoon_generation.get_platoon()
-        file_generation = manage_files.GenerateContent(country_code, platoon_type)
+        file_generation = manage_files.GenerateContent()
         platoon_file = "%s_%s" % (country_code, platoon_type)
-        file_generation.new_platoon_files(platoon_list, platoon_file)
+        file_generation.write_yaml('platoons', country_code, platoon_file, platoon_list)
+        html_content = file_generation.generate_html(platoon_file)
+        file_generation.write_html('platoons', country_code, platoon_file, html_content)
+        
 
     elif menu_choice ==  "Update Existing Platoon":
         update_status = manage_platoons.UpdatePlatoon()
         (country_code, platoon_type, platoon_list, mia_list, hospital_list, deceased_list) = update_status.update_platoon()
-        print(platoon_list)
-        file_generation = manage_files.GenerateContent(country_code, platoon_type)
+        file_generation = manage_files.GenerateContent()
 
         platoon_file = "%s_%s" % (country_code, platoon_type)
-        file_generation.write_yaml_dump(platoon_file, platoon_list)
+        file_generation.write_yaml('platoons', country_code, platoon_file, platoon_list)
 
         mia_file = "%s_%s_mia" % (country_code, platoon_type)
-        file_generation.write_yaml_dump(mia_file, mia_list, append=1)
+        file_generation.write_yaml('platoons', country_code, mia_file, mia_list, append=1)
 
         hospital_file = "%s_%s_hospital" % (country_code, platoon_type)
-        file_generation.write_yaml_dump(hospital_file, hospital_list, append=1)
+        file_generation.write_yaml('platoons', country_code, hospital_file, hospital_list, append=1)
 
         deceased_file = "%s_%s_deceased" % (country_code, platoon_type)
-        file_generation.write_yaml_dump(deceased_file, deceased_list, append=1)
+        file_generation.write_yaml('platoons', country_code, deceased_file, deceased_list, append=1)
+
+#    elif menu_choice == "Generate Replacements":
+#        replacements = manage_platoons.GenerateReplacements()
+#        replacements.replace_leaders()
+
+#    elif menu_choice == "Write HTML":
+#        file_generation = manage_files.GenerateContent()
+#        yaml_file = 'platoons/us/us_infantry.yaml'
+#        html_file = 'platoons/us/us_infantry.html'
+#        file_generation.write_hytml(html_file, html_content, append_file=None)
+#

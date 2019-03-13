@@ -11,10 +11,9 @@ class PlatoonMeta:
         self.menu_management    = manage_ui.MenuManagement()
         self.country_code       = None
         self.platoon_type       = None
-        self.map_dir            = 'yaml_maps'
 
     def set_country_code(self):
-        country_codes = self.file_management.load_yaml(os.path.join(self.map_dir,'country_codes' + ".yaml"))
+        country_codes = self.file_management.load_yaml('yaml_map','country_codes')
         country_list = []
         for key in country_codes:
             country_list.append(key)
@@ -23,7 +22,7 @@ class PlatoonMeta:
 
     def set_type(self):
         try:
-            platoon_type_map = self.file_management.load_yaml(os.path.join(self.map_dir,'platoon_types' + ".yaml"))
+            platoon_type_map = self.file_management.load_yaml('yaml_map','platoon_types')
             self.platoon_type = self.menu_management.menu_ui(platoon_type_map[self.country_code])
         except KeyError as e:
             print(str(e))
@@ -35,7 +34,7 @@ class PlatoonMeta:
         if not self.platoon_type:
             self.set_type()
         try:
-            self.platoon_map = self.file_management.load_yaml(os.path.join(self.map_dir,'squad_map_' + self.country_code + ".yaml"))
+            self.platoon_map = self.file_management.load_yaml('yaml_map','squad_map_' + self.country_code)
             platoon_attributes = self.platoon_map[self.platoon_type]
             platoon_attributes['country_code'] = self.country_code
             platoon_attributes['platoon_type'] = self.platoon_type
@@ -50,6 +49,7 @@ class GeneratePlatoon(PlatoonMeta):
         PlatoonMeta.__init__(self)
         self.platoon_attributes = self.set_attributes()
         self.dice_bag = roll_dice.RollDice()
+        self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
         self.platoon_roles = []
         self.platoon = []
 
@@ -72,16 +72,25 @@ class GeneratePlatoon(PlatoonMeta):
             self.platoon_roles.append(squad_members)
 
     def set_member_attributes(self):
-        character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
+        squad_num = 1
         for squads in self.platoon_roles:
-            squad = []
+            squad_list = []
+            squad = {}
             for role in squads:
-                member = character_attributes.get_attributes(role)
-                squad.append(member)
+                member = self.character_attributes.get_attributes(role)
+                squad_list.append(member)
+            squad_label = "squad_%s" % str(squad_num)
+            squad[squad_label] = squad_list
             self.platoon.append(squad)
+            squad_num += 1
                 
 
     def get_platoon(self):
+        lt_dict = {}
+        platoon_lt = []
+        platoon_lt.append(self.character_attributes.get_attributes('Lieutenant'))
+        lt_dict['platoon_lieutenant'] = platoon_lt
+        self.platoon.append(lt_dict)
         self.set_roles()
         self.set_member_attributes()
         return(self.platoon_attributes['country_code'], self.platoon_attributes['platoon_type'], self.platoon)
@@ -163,5 +172,46 @@ class UpdatePlatoon(PlatoonMeta):
             del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
 
 
+
+class GenerateReplacements(PlatoonMeta):
+
+  
+    def __init__(self):
+        PlatoonMeta.__init__(self)
+        self.dice_bag = roll_dice.RollDice()
+        self.platoon_attributes = self.set_attributes()
+        self.yaml_top_key = "%s_%s" % (self.platoon_attributes['country_code'], self.platoon_attributes['platoon_type'])
+        self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
+        self.platoon_yaml_map = self.file_management.load_yaml(os.path.join('platoons', self.platoon_attributes['country_code'], self.platoon_attributes['country_code'] + "_" + self.platoon_attributes['platoon_type'] + ".yaml"))
+#        self.platoon_roles = []
+#        self.platoon = []
+#        self.mia_pow = []
+#        self.hospital = []
+#        self.deceased = []
+
+    def replace_leaders(self):
+        n = 1
+        nco = None
+        squad = "squad_%s" % str(n)
+        squads_in_platoon = len(self.platoon_yaml_map[self.yaml_top_key])
+        while n <= squads_in_platoon:
+            for member in self.platoon_yaml_map[self.yaml_top_key][squad]:
+                if 'NCO' in member.values():
+                    nco = 1
+            if not nco:
+                print('no nco in squad %s' % squad)
+                next_squad = n + 1
+                promote_from_squad = "squad_%s" % str(next_squad)
+                while next_squad <= squads_in_platoon:
+                    for member in self.platoon_yaml_map[self.yaml_top_key][promote_from_squad]:
+                        if 'NCO' in member.values():
+                            print("promote member %s" % member)
+                            return
+                        else:
+                            next_squad += 1 
+                            promote_from_squad = "squad_%s" % str(next_squad)
+            n += 1
+            nco = None
+            squad = "squad_%s" % str(n)
 
 

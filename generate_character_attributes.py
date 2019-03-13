@@ -6,22 +6,16 @@ class GenerateCharacter:
     def __init__(self, country_code):
         self.dice_bag        = roll_dice.RollDice()
         self.file_management = manage_files.FileManagement()
-        self.map_dir         = 'yaml_maps'
-        self.first_name_yaml = os.path.join(self.map_dir, "names_first_" + country_code + ".yaml")
-        self.last_name_yaml  = os.path.join(self.map_dir, "names_last_" + country_code + ".yaml")
-        self.platoon_yaml    = os.path.join(self.map_dir, "squad_map_" + country_code + ".yaml")
-        self.attribute_yaml  = os.path.join(self.map_dir, "attribute_map.yaml")
-
         self.rep_dict = {
             'us': [3,3,4,4,4,5],
             'br': [3,4,4,4,4,5],
             'ge': [3,4,4,4,5,5],
             'ru': [3,3,4,4,4,5],
         }
-        self.attribute_dict  = self.file_management.load_yaml(self.attribute_yaml)
         self.rep_list        = self.rep_dict[country_code]
-        self.first_name_dict = self.file_management.load_yaml(self.first_name_yaml)
-        self.last_name_dict  = self.file_management.load_yaml(self.last_name_yaml)
+        self.attribute_dict  = self.file_management.load_yaml('yaml_map', 'attribute_map')
+        self.first_name_dict = self.file_management.load_yaml('yaml_map', "names_first_" + country_code)
+        self.last_name_dict  = self.file_management.load_yaml('yaml_map', "names_last_" + country_code)
 
     #if attribute_tree is 5 or less, use the v4 attributes table
     #else use compendium attributes table and returns of "reroll" are re-generated until another result is returned

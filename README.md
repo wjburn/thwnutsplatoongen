@@ -28,7 +28,7 @@ found in yaml_maps/names_first_xx.yaml and names_last_xx.yaml
 #### Usage
 
     Make sure to extract the zip file to the directory you want to save your files
-    You will be prompted to select a country and then a platoon type
+    You will be guided through options via a numerical menu
     After this two files will be written an HTML file and a YAML file
     The HTML file is inteded to be printed and used for the NUTS game
     

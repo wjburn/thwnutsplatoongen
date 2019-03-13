@@ -2,13 +2,20 @@
 
 add exit menu option to menu ui, allowing menu to break current loop
 
-fix yaml to proper formatting and update html generation
-
-x remove non-active squad members from existing yaml
-
 menu to allow multiple status updates for members and squads
 
-x write changes to separate yaml files based on status update
+update squad members role (promotion) and rep, allow for squad members to be moved to different squads or promoted to LT
 
 generate replacements for squads
 
+remove country_code from yaml/html call param
+
+fix html generation to not require yaml file load
+
+COMPLETE:
+
+x fix yaml to proper formatting and update html generation
+
+x remove non-active squad members from existing yaml
+
+x write changes to separate yaml files based on status update

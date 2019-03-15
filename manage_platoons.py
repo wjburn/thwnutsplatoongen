@@ -106,17 +106,17 @@ class UpdatePlatoon(PlatoonMeta):
         self.platoon_attributes = self.set_attributes()
         self.yaml_top_key = "%s_%s" % (self.platoon_attributes['country_code'], self.platoon_attributes['platoon_type'])
         self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
-        self.platoon_yaml_map = self.file_management.load_yaml(os.path.join('platoons', self.platoon_attributes['country_code'], self.platoon_attributes['country_code'] + "_" + self.platoon_attributes['platoon_type'] + ".yaml"))
-        self.platoon_roles = []
-        self.platoon = []
-        self.mia_pow = []
-        self.hospital = []
-        self.deceased = []
+        self.platoon_yaml_map = self.file_management.load_yaml('platoons',  self.platoon_attributes['country_code'] + "_" + self.platoon_attributes['platoon_type'],self.platoon_attributes['country_code'])
+#        self.platoon_roles = []
+#        self.platoon = []
+#        self.mia_pow = []
+#        self.hospital = []
+#        self.deceased = []
 
 
     def update_platoon(self):
         while True:
-            squad_num = self.get_squad()
+            (squad_num) = self.get_squad()
             self.update_squad(squad_num)
             continue_update_squad = input("Update another squad(y/n): ")
             if continue_update_squad == 'y' or continue_update_squad == 'yes':
@@ -130,7 +130,7 @@ class UpdatePlatoon(PlatoonMeta):
         while True:
             squad_member_id = self.get_squad_member(squad_num)
             if squad_member_id is not None:
-                self.set_member_status(squad_num, squad_member_id)
+                self.set_squad_member_attributes(squad_num, squad_member_id)
                 continue_update_members =  input("Update another member of this squad(y/n): ")
                 if continue_update_members == 'y' or continue_update_members == 'yes':
                     continue
@@ -140,36 +140,73 @@ class UpdatePlatoon(PlatoonMeta):
             return 
 
     def get_squad(self):
-        squads = []
-        for key in self.platoon_yaml_map[self.yaml_top_key]:
-            squads.append(key)
-        squad_num = self.menu_management.menu_ui(squads)
+        squad_nums = []
+        for element in self.platoon_yaml_map:
+            for key in element:
+                squad_nums.append(key)
+        squad_num = self.menu_management.menu_ui(squad_nums, return_menu_val=1)
         return(squad_num)
   
     def get_squad_member(self, squad_num):
-        squad_members = []
-        for key in self.platoon_yaml_map[self.yaml_top_key][squad_num]:
-            squad_members.append(key)
-        if len(squad_members) > 0:
-            squad_member_id = self.menu_management.menu_ui(squad_members, return_menu_val=1)
-            return(squad_member_id)
-        else:
-            return
+        attribute_list = ['name', 'role', 'rep', 'attribute', 'status']
+        squad_list = []
+        for key in self.platoon_yaml_map[squad_num]:
+            if len(self.platoon_yaml_map[squad_num][key]) > 0:
+                 #yaml dump does not honor python dictionary sorting, re-sort the keys into an order for display
+                 for element in self.platoon_yaml_map[squad_num][key]:
+                     character_attributes = {}
+                     for attribute in attribute_list:
+                         character_attributes[attribute] = element[attribute]
+                     squad_list.append(character_attributes)
+                 squad_member_id = self.menu_management.menu_ui(squad_list, return_menu_val=1)
+                 return(squad_member_id)
+            else:
+                return
 
 
-    def set_member_status(self, squad_num, squad_member_id):
-        status_updates = ['active', 'pow/mia', 'hospital', 'deceased']
-        status = self.menu_management.menu_ui(status_updates)
-        self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]['status'] = status
-        if status == 'pow/mia':
-            self.mia_pow.append(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
-            del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
-        elif status == 'hospital':
-            self.hospital.append(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
-            del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
-        elif status == 'deceased':
-            self.deceased.append(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
-            del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
+    def set_squad_member_attributes(self, squad_num, squad_member_id):
+        status_menu_list = []
+        status_menu_dict = {
+          #  'change squad': self.change_squad(),#squad_num, squad_member_id),
+            'change role': self.change_role(squad_num, squad_member_id),
+#            'add attribute': self.change_role(),#(squad_num, squad_member_id),
+#            'update rep': self.change_role(),#(squad_num, squad_member_id),
+#            'update status': self.change_role(),#(squad_num, squad_member_id),
+        }
+        for key in status_menu_dict.keys():
+            status_menu_list.append(key)
+        status_option = self.menu_management.menu_ui(status_menu_list)
+        print(status_option)
+        status_menu_dict[status_option](squad_num, squad_member_id)
+
+
+    def change_squad(self):
+        pass
+
+    def change_role(self, squad_num, squad_member_id):
+        print(self.platoon_yaml_map[squad_num])
+        
+
+    def add_attribute(self):
+        pass
+
+    def update_rep(self):
+        pass
+
+    def update_status(self):
+        pass
+#        status_updates = ['active', 'pow/mia', 'hospital', 'deceased']
+#        status = self.menu_management.menu_ui(status_updates)
+#        self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]['status'] = status
+#        if status == 'pow/mia':
+#            self.mia_pow.append(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
+#            del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
+#        elif status == 'hospital':
+#            self.hospital.append(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
+#            del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
+#        elif status == 'deceased':
+#            self.deceased.append(self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id])
+#            del self.platoon_yaml_map[self.yaml_top_key][squad_num][squad_member_id]
 
 
 

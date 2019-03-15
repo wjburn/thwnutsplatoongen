@@ -14,8 +14,11 @@ class FileManagement:
         print("Failed file: %s " % file + str(error))
         sys.exit()
 
-    def load_yaml(self, map_key, file_name):
-        yaml_file = os.path.join(self.directory_map[map_key], file_name + ".yaml")
+    def load_yaml(self, map_key, file_name, country_code=None):
+        if country_code:
+            yaml_file = os.path.join(self.directory_map[map_key], country_code, file_name + ".yaml")
+        else:
+            yaml_file = os.path.join(self.directory_map[map_key], file_name + ".yaml")
         try:
             with open(yaml_file, "r") as f:
                  yaml_map = yaml.load(f)

@@ -12,6 +12,10 @@ remove country_code from yaml/html call param
 
 fix html generation to not require yaml file load
 
+re-do directory structure, country_code/platoons/ allow for company generation with platoons inside
+
+redesign yaml/html function calls
+
 COMPLETE:
 
 x fix yaml to proper formatting and update html generation

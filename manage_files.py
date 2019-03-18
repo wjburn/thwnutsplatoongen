@@ -65,6 +65,7 @@ class FileManagement:
         if append:
             write_file = 'a+'
         yaml_file = os.path.join(self.directory_map[map_key], country_code, file_name + ".yaml")
+        os.path.join(self.directory_map[map_key], country_code)
         self.check_directory(self.directory_map[map_key])
         if not append and not self.check_overwrite(yaml_file):
             print("Will not overwrite file: %s" % yaml_file)
@@ -83,10 +84,10 @@ class GenerateContent(FileManagement):
         FileManagement.__init__(self)
 
     #TODO fix the yaml load here to not need a yaml file path
-    def generate_html(self, file_name):
+    def generate_html(self, country_code, file_name):
         platoon_keys = ["name", "role", "rep", "attribute", "status"]
         content_html = []
-        content_yaml = self.load_yaml('platoons', file_name)
+        content_yaml = self.load_yaml('platoons', file_name, country_code)
         content_html.append("<html>\n<body>\n")
         content_html.append("<style>\ntable {\nfont-family: arial, sans-serif;\nborder-collapse: collapse;\n  width: 100%;\n}\n")
         content_html.append("td, th {\n  border: 3px solid #dddddd;\n text-align: left;\n  padding: 2px;\nvertical-align: bottom;\n}\n")
@@ -103,7 +104,6 @@ class GenerateContent(FileManagement):
                     content_html.append("<th width=\"1px\">%s</th>\n" % key)
 
                 content_html.append("</tr>\n")
-
                 for member in list_item[yaml_key]:
                     content_html.append("<tr>\n")
                     for key in platoon_keys:

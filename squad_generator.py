@@ -55,7 +55,7 @@ if __name__ == "__main__":
         file_generation = manage_files.GenerateContent()
         platoon_file = "%s_%s" % (country_code, platoon_type)
         file_generation.write_yaml('platoons', country_code, platoon_file, platoon_list)
-        html_content = file_generation.generate_html(platoon_file)
+        html_content = file_generation.generate_html(country_code, platoon_file)
         file_generation.write_html('platoons', country_code, platoon_file, html_content)
         
 

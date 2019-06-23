@@ -3,19 +3,23 @@ import manage_files
 import os
 
 class GenerateCharacter:
+
     def __init__(self, country_code):
         self.dice_bag        = roll_dice.RollDice()
         self.file_management = manage_files.FileManagement()
-        self.rep_dict = {
+        #reputation generation from nuts v4 via country_code
+        rep_dict = {
             'us': [3,3,4,4,4,5],
             'br': [3,4,4,4,4,5],
             'ge': [3,4,4,4,5,5],
             'ru': [3,3,4,4,4,5],
         }
-        self.rep_list        = self.rep_dict[country_code]
+        self.rep_list = rep_dict[country_code]
         self.attribute_dict  = self.file_management.load_yaml('yaml_map', 'attribute_map')
         self.first_name_dict = self.file_management.load_yaml('yaml_map', "names_first_" + country_code)
         self.last_name_dict  = self.file_management.load_yaml('yaml_map', "names_last_" + country_code)
+
+
 
     #if attribute_tree is 5 or less, use the v4 attributes table
     #else use compendium attributes table and returns of "reroll" are re-generated until another result is returned
@@ -29,6 +33,7 @@ class GenerateCharacter:
             if attribute != "reroll":
                 return(attribute)
     
+    #names based on country code
     def get_first_name(self):
         first_name = self.first_name_dict["First_Names"][self.dice_bag.roll_d6()][self.dice_bag.roll_d6()][self.dice_bag.roll_d6()]
         return(first_name)
@@ -42,14 +47,10 @@ class GenerateCharacter:
         rep_val -= 1
         return(self.rep_list[rep_val])
 
-    def get_attributes(self, role, **kwargs):
-        rep = kwargs.get('rep', self.get_rep())
-        attributes = {
-            'name': "%s, %s" % (self.get_last_name(), self.get_first_name()),
-            'role': role,
-            'rep': rep,
-            'attribute':  self.get_attribute(),
-            'status': 'active'
-        }
-        return(attributes)
-        
+     #returns(string, string, string, dict)
+    def get_character(self):
+        first_name = self.get_first_name()
+        last_name = self.get_last_name()
+        rep = self.get_rep()
+        attribute = self.get_attribute()
+        return(first_name, last_name, rep, attribute)

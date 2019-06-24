@@ -49,8 +49,4 @@ class GenerateCharacter:
 
      #returns(string, string, string, dict)
     def get_character(self):
-        first_name = self.get_first_name()
-        last_name = self.get_last_name()
-        rep = self.get_rep()
-        attribute = self.get_attribute()
-        return(first_name, last_name, rep, attribute)
+        return(self.get_first_name(), self.get_last_name(), self.get_rep(), self.get_attribute())

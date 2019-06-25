@@ -66,8 +66,16 @@ class ManagePlatoon(ManageSquad):
         platoon = [self.generate_squad() for i in range(int(self.squad_template['squad_per_platoon']))]
         return(platoon)
 
+    def update_platoon(self, platoon_yaml_file, squad, name, status):
+        platoon = self.file_management.load_yaml('platoons', platoon_yaml_file)
+        for member in platoon[squad]:
+            if name == member['name']:
+                member['status'] = status
+                return
+        return(1)
+        
+
 
 if __name__ == "__main__":
     manage_platoon = ManagePlatoon('us', 'Paratroopers')
-    platoon = manage_platoon.generate_platoon()
-    print(platoon)
+    print(manage_platoon.update_platoon("ru\\ru_Infantry", 'squad_2', 'Rementin, Eduard', 'active'))

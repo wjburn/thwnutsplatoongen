@@ -43,7 +43,6 @@ class PlatoonMeta:
             return
         return(platoon_attributes)
 
-        
 class GeneratePlatoon(PlatoonMeta):
     def __init__(self):
         PlatoonMeta.__init__(self)
@@ -52,49 +51,6 @@ class GeneratePlatoon(PlatoonMeta):
         self.character_attributes = generate_character_attributes.GenerateCharacter(self.platoon_attributes['country_code'])
         self.platoon_roles = []
         self.platoon = []
-
-
-    def set_roles(self):
-        #number of squads in a platoon
-        for squad_number in range(int(self.platoon_attributes['squad_per_platoon'])):
-            #squad size is the base_size + add_d6 roll
-            squad_size = self.platoon_attributes['base_size'] + self.dice_bag.roll_d6()
-            #if the generated size is greater than the squad max size, set the squad to max size
-            if squad_size > self.platoon_attributes['max_squad_size']:
-                squad_size = self.platoon_attributes['max_squad_size']
-            squad_members = []
-            #iterate through each role and associated value, the value indicates the max role each squad can contain
-            for key, value in self.platoon_attributes['roles'].items():
-                for roles in range(int(value)):
-                    if squad_size > 0:
-                        squad_members.append(key)
-                        squad_size -= 1
-            self.platoon_roles.append(squad_members)
-
-    def set_member_attributes(self):
-        squad_num = 1
-        for squads in self.platoon_roles:
-            squad_list = []
-            squad = {}
-            for role in squads:
-                member = self.character_attributes.get_attributes(role)
-                squad_list.append(member)
-            squad_label = "squad_%s" % str(squad_num)
-            squad[squad_label] = squad_list
-            self.platoon.append(squad)
-            squad_num += 1
-                
-
-    def get_platoon(self):
-        lt_dict = {}
-        platoon_lt = []
-        platoon_lt.append(self.character_attributes.get_attributes('Lieutenant'))
-        lt_dict['platoon_lieutenant'] = platoon_lt
-        self.platoon.append(lt_dict)
-        self.set_roles()
-        self.set_member_attributes()
-        return(self.platoon_attributes['country_code'], self.platoon_attributes['platoon_type'], self.platoon)
-
 
 
 class UpdatePlatoon(PlatoonMeta):

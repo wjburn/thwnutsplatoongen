@@ -66,16 +66,71 @@ class ManagePlatoon(ManageSquad):
         platoon = [self.generate_squad() for i in range(int(self.squad_template['squad_per_platoon']))]
         return(platoon)
 
-    def update_platoon(self, platoon_yaml_file, squad, name, status):
+
+    def get_platoon_map(self, platoon_yaml_file):
         platoon = self.file_management.load_yaml('platoons', platoon_yaml_file)
+        if platoon:
+            return(platoon)
+        else:
+            print("ERROR: no such file %s" % platoon_yaml_file)
+
+    def update_platoon(self, platoon_yaml_file, squad, name, status):
+        platoon = self.get_platoon_map(platoon_yaml_file)
         for member in platoon[squad]:
             if name == member['name']:
                 member['status'] = status
-                return
-        return(1)
+        self.replace_leaders(platoon)
+        return(platoon)
+    
+#    def replace_leaders(self, platoon):
+#        for squad in platoon:
+#            roles = {
+#               'NCO': None,
+#               'JrNCO': None,
+#            }
+#            for key in roles:
+#                print(v)
+#                if key == v['role']:
+#                    print(v['name'])
+#            for member in squad:
+#                for key in roles:
+#                    if key == member['role']:
+#                        roles[key] = member['name']
+#
+#
+#
+#
+#                if not roles['NCO'] and roles['JrNCO']:
+#                    print(squad[0])
+#                    squad[roles['JrNCO']]['role'] = 'NCO'
+#                    squad[self.get_highest_rep(squad, exclude=member['name'])]['role'] = 'JrNCO'
+#            print(squad)
+#               
+
+                    
+
+    def get_highest_rep(self, squad, exclude=[]):
+        highest_rep = None
+        base_rep = 0
+        for member in squad:
+            if member['rep'] > base_rep and member['name'] not in exclude:
+                base_rep = member['rep']
+                highest_rep = member
+        return(highest_rep)
+
+
+
         
+            
+                    
+            
+            
+            
+
+
+
 
 
 if __name__ == "__main__":
     manage_platoon = ManagePlatoon('us', 'Paratroopers')
-    print(manage_platoon.update_platoon("ru\\ru_Infantry", 'squad_2', 'Rementin, Eduard', 'active'))
+    manage_platoon.update_platoon("ru\\ru_Infantry", 'squad_2', 'Rementin, Eduard', 'active')

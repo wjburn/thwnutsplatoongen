@@ -4,7 +4,7 @@ import manage_files
 
 class ManageSquad:
 
-    def __init__(self, country_code, infantry_type, debug=1):
+    def __init__(self, country_code, infantry_type, debug=0):
         self.debug = debug
         self.country_code = country_code
         self.infantry_type = infantry_type
@@ -31,13 +31,22 @@ class ManageSquad:
         #if the generated size is greater than the squad max size, set the squad to max size
         if squad_size > self.squad_template['max_squad_size']:
             squad_size = self.squad_template['max_squad_size']
+            #roles items
+            #roles:
+            #NCO: 1
+            #JrNCO: 1
+            #LMG: 1
+            #LMG_Assist: 0
+            #SA_Gerenade: 2
+            #Rifle: 7
         for key, value in self.squad_template['roles'].items():
             members += self.fill_squad_role(key, value)
         if self.debug:
-            print("\nDEBUG: print squad members: %s\n" % members)
+            print("\nDEBUG: class ManageSquad variable squad members: %s\n" % members)
+        return(members)
 
 
-    #fill each role in the squad with a character
+    #fill each role in the squad with a character role_count number of times
     def fill_squad_role(self, role_name, role_count):
         character = {}
         roles = []
@@ -52,62 +61,25 @@ class ManageSquad:
 
 class ManagePlatoon(ManageSquad):
 
-    def __init__(self, country_code, infantry_type, debug=1):
+    def __init__(self, country_code, infantry_type, debug=0):
         self.debug = debug
         self.country_code = country_code
-        ManageSquad.__init__(self, country_code, infantry_type)
+        ManageSquad.__init__(self, country_code, infantry_type, debug=self.debug)
         self.file_management = manage_files.FileManagement()
-        squad_template = self.load_squad_template()
-        print("DEBUG: print squads per platoon value:  %s\n" % squad_template['squad_per_platoon'])
-
 
     def generate_platoon(self):
         platoon = []
         platoon = [self.generate_squad() for i in range(int(self.squad_template['squad_per_platoon']))]
+        if self.debug:
+            print("DEBUG: class ManagePlatoon variable platoon: %s\n" % platoon)
         return(platoon)
 
-
-    def get_platoon_map(self, platoon_yaml_file):
-        platoon = self.file_management.load_yaml('platoons', platoon_yaml_file)
-        if platoon:
-            return(platoon)
-        else:
-            print("ERROR: no such file %s" % platoon_yaml_file)
-
-    def update_platoon(self, platoon_yaml_file, squad, name, status):
-        platoon = self.get_platoon_map(platoon_yaml_file)
-        for member in platoon[squad]:
-            if name == member['name']:
-                member['status'] = status
-        self.replace_leaders(platoon)
+    def update_squad_member(self, platoon, squad, list_val, member_key, member_value):
+        list_val = int(list_val)
+        platoon[squad][list_val][member_key] = member_value
+        if self.debug:
+            print("DEBUG: class ManagePlatoon updated member %s  from squad %s with key %s to value %s" % (platoon[squad][list_val]['name'], squad, member_key, member_value))
         return(platoon)
-    
-#    def replace_leaders(self, platoon):
-#        for squad in platoon:
-#            roles = {
-#               'NCO': None,
-#               'JrNCO': None,
-#            }
-#            for key in roles:
-#                print(v)
-#                if key == v['role']:
-#                    print(v['name'])
-#            for member in squad:
-#                for key in roles:
-#                    if key == member['role']:
-#                        roles[key] = member['name']
-#
-#
-#
-#
-#                if not roles['NCO'] and roles['JrNCO']:
-#                    print(squad[0])
-#                    squad[roles['JrNCO']]['role'] = 'NCO'
-#                    squad[self.get_highest_rep(squad, exclude=member['name'])]['role'] = 'JrNCO'
-#            print(squad)
-#               
-
-                    
 
     def get_highest_rep(self, squad, exclude=[]):
         highest_rep = None
@@ -120,17 +92,3 @@ class ManagePlatoon(ManageSquad):
 
 
 
-        
-            
-                    
-            
-            
-            
-
-
-
-
-
-if __name__ == "__main__":
-    manage_platoon = ManagePlatoon('us', 'Paratroopers')
-    manage_platoon.update_platoon("ru\\ru_Infantry", 'squad_2', 'Rementin, Eduard', 'active')

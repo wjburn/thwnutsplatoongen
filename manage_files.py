@@ -4,11 +4,11 @@ import sys
 
 class FileManagement:
 
-    def __init__(self):
-        self.directory_map = {
-            'platoons': 'platoons',
-            'yaml_map': 'yaml_maps',
-        }
+    def __init__(self, debug=0):
+        self.debug = debug
+        platoons_dir = 'platoons'
+        yaml_map_dir = 'yaml_maps'
+        self.html_file_path =  self.load_yaml(platoons_
 
     def file_error(self, file, error):
         print("Failed file: %s " % file + str(error))
@@ -27,6 +27,8 @@ class FileManagement:
 
         except (PermissionError, FileNotFoundError) as e:
             self.file_error(yaml_file, str(e))
+        
+    def write_files(self, )
 
     def check_overwrite(self, file_path):
         if os.path.exists(os.path.abspath(file_path)):
@@ -47,7 +49,7 @@ class FileManagement:
 
     def write_html(self, map_key, country_code, file_name, html_content):
         write_file = "w"
-        html_file = os.path.join(self.directory_map[map_key], country_code, file_name + ".html")
+        
         try:
             with open(html_file, write_file) as f:
                 for line in html_content:
@@ -74,27 +76,21 @@ class FileManagement:
         with open(yaml_file, write_file) as f:
             yaml.dump(yaml_content, f, default_flow_style=False)
         f.close
-        print("TEST %s" % yaml_file)
+        if self.debug:
+            print("DEBUG: class FileManagement variable yaml_file  %s" % yaml_file)
         
 
             
-class GenerateContent(FileManagement):
-
-    def __init__(self):
-        FileManagement.__init__(self)
-
-    #TODO fix the yaml load here to not need a yaml file path
-    def generate_html(self, country_code, file_name):
+    def generate_html(self, platoon):
         platoon_keys = ["name", "role", "rep", "attribute", "status"]
         content_html = []
-        content_yaml = self.load_yaml('platoons', file_name, country_code)
         content_html.append("<html>\n<body>\n")
         content_html.append("<style>\ntable {\nfont-family: arial, sans-serif;\nborder-collapse: collapse;\n  width: 100%;\n}\n")
         content_html.append("td, th {\n  border: 3px solid #dddddd;\n text-align: left;\n  padding: 2px;\nvertical-align: bottom;\n}\n")
         content_html.append("tr:nth-child(even) {\n  background-color: #dddddd;\n}\n")
         content_html.append("</style>\n</head>\n<body>\n")
         content_html.append("<table>\n")
-        for list_item in content_yaml:
+        for list_item in platoon:
             for yaml_key in list_item:
                 content_html.append("<tr>\n")
                 content_html.append("<th width=\"1px\">%s</th>\n" % yaml_key)

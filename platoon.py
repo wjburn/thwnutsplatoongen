@@ -18,9 +18,8 @@ class Platoon:
         if generate_new:
             self.platoon = self.mp.generate_platoon()
         else:
-            yaml_map_name = self.country_code + '_' + self.infantry_type
-            self.platoon_yaml_path = os.path.join(self.country_code, yaml_map_name)
-            self.platoon = self.fm.load_yaml('platoons', self.platoon_yaml_path)
+            yaml_map_name = self.country_code + '_' + self.infantry_type + '.yaml'
+            self.platoon = self.fm.load_yaml('platoons', yaml_map_name)
 
         if self.debug:
             print("DEBUG: Platoon class platoon variable value: %s\n" % self.platoon)

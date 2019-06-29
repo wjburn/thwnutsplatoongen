@@ -7,6 +7,7 @@ class GenerateCharacter:
     def __init__(self, country_code):
         self.dice_bag        = roll_dice.RollDice()
         self.file_management = manage_files.FileManagement()
+        self.attribute_map_list = ['yaml_maps', '']
         #reputation generation from nuts v4 via country_code
         rep_dict = {
             'us': [3,3,4,4,4,5],
@@ -15,9 +16,9 @@ class GenerateCharacter:
             'ru': [3,3,4,4,4,5],
         }
         self.rep_list = rep_dict[country_code]
-        self.attribute_dict  = self.file_management.load_yaml('yaml_map', 'attribute_map')
-        self.first_name_dict = self.file_management.load_yaml('yaml_map', "names_first_" + country_code)
-        self.last_name_dict  = self.file_management.load_yaml('yaml_map', "names_last_" + country_code)
+        self.attribute_dict  = self.file_management.load_yaml('yaml_maps', 'attribute_map.yaml')
+        self.first_name_dict = self.file_management.load_yaml('yaml_maps', "names_first_" + country_code + '.yaml')
+        self.last_name_dict  = self.file_management.load_yaml('yaml_maps', "names_last_" + country_code + '.yaml')
 
 
 

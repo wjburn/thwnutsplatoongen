@@ -31,10 +31,3 @@ class Platoon:
         self.platoon = self.mp.update_squad_member(self.platoon, squad, list_val, update_attribute, update_value)
         print(self.platoon)
         return(self.platoon)
-
-        
-
-if __name__ == "__main__":
-    manage_platoon = Platoon('us', 'Paratroopers')
-    platoon = manage_platoon.get_platoon(generate_new=0)
-    print(platoon)

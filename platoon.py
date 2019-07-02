@@ -9,7 +9,7 @@ class Platoon:
         self.platoon = None
         self.country_code = country_code
         self.infantry_type = infantry_type
-        self.fm = FileManagement(self.country_code, self.infantry_type, self.debug)
+        self.fm = FileManagement(self.country_code, self.debug)
         self.mp = manage_platoon.ManagePlatoon(country_code, infantry_type, self.debug) 
 
 
@@ -32,5 +32,5 @@ class Platoon:
     def write_platoon(self, generate_new=0):
         if generate_new:
             self.get_platoon(generate_new=1)
-        self.fm.write_platoon_file(self.platoon)
+        self.fm.write_platoon_file(self.platoon, self.infantry_type)
         return(self.platoon)

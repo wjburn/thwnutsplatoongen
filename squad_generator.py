@@ -46,10 +46,19 @@ import platoon
 #
 #
 #    menu = manage_ui.MenuManagement()
+#country_codes = ['br', 'ge', 'ru', 'us']
+#print("choose country:")
+#i = 1
+#for code in country_codes:
+#    print(str(i)+": "+ code)
+#    i += 1
+#user_country = input("Numeric selection: ")
+#
+#try:
+
 country_code = 'us'
 infantry_type = 'Paratroopers'
-#
-#    menu_choice = menu.menu_ui(main_menu)
+
 manage_platoon = platoon.Platoon(country_code, infantry_type, debug=0)
 platoon = manage_platoon.write_platoon(generate_new=1)
 #print(platoon)

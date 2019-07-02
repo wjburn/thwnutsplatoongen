@@ -9,7 +9,7 @@ class ManageSquad:
         self.country_code = country_code
         self.infantry_type = infantry_type
         self.dice_bag = roll_dice.RollDice()
-        self.fm = manage_files.FileManagement(self.country_code, self.infantry_type)
+        self.fm = manage_files.FileManagement(self.country_code)
         self.gc = generate_character.GenerateCharacter(self.country_code, self.infantry_type)
 
 

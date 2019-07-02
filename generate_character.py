@@ -8,7 +8,7 @@ class GenerateCharacter:
         self.country_code = country_code
         self.infantry_type = infantry_type
         self.dice_bag        = roll_dice.RollDice()
-        self.fm = manage_files.FileManagement(self.country_code, self.infantry_type)
+        self.fm = manage_files.FileManagement(self.country_code)
         #reputation generation from nuts v4 via country_code
         rep_dict = {
             'us': [3,3,4,4,4,5],

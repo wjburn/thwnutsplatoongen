@@ -4,12 +4,9 @@ import sys
 
 class FileManagement:
 
-    def __init__(self, country_code, infantry_type, debug=0):
+    def __init__(self, country_code, debug=0):
         self.debug = debug
         self.country_code = country_code
-        self.infantry_type = infantry_type
-        platoon_file_name = self.country_code + '_' + self.infantry_type + '.yaml'
-        platoon_path = os.path.join('platoons', self.country_code, platoon_file_name)
         attribute_path = os.path.join('yaml_maps', 'attribute_map.yaml')
         first_name_path = os.path.join('yaml_maps', 'names_first_' + self.country_code + '.yaml',)
         last_name_path = os.path.join('yaml_maps', 'names_last_' + self.country_code + '.yaml',)
@@ -18,7 +15,6 @@ class FileManagement:
             'attribute': attribute_path,
             'first_name': first_name_path,
             'last_name': last_name_path,
-            'platoon':    platoon_path,
             'squad_map': squad_attributes_map,
         }
 
@@ -33,14 +29,17 @@ class FileManagement:
             print("ERROR: failed to open file: %s" % str(e))
             os._exit(1)
 
-    def write_platoon_file(self, platoon):
-        if self.check_overwrite(self.file_name_map['platoon']):
-            print("MESSAGE: not overwriting file: %s" % self.file_name_map['platoon'])
+    def write_platoon_file(self, platoon, infantry_type):
+        platoon_file_name = self.country_code + '_' + infantry_type + '.yaml'
+        platoon_path = os.path.join('platoons', self.country_code, platoon_file_name)
+        if self.check_overwrite(platoon_path):
+            print("MESSAGE: not overwriting file: %s" % platoon_path)
             os._exit(1)
-#        yaml_content = yaml.dump(platoon, default_flow_style=False)
-        self.write_yaml(self.file_name_map['platoon'], platoon)
-#        html_file_path = self.file_name_map['platoon'].replace(".yaml", ".html")
-#        self.write_html(html_file_path, yaml_content)
+        platoon_yaml = yaml.dump(platoon, default_flow_style=False)
+        self.write_yaml(platoon_path, platoon_yaml)
+        platoon_path.replace(".yaml", ".html")
+        self.write_html(platoon_path, platoon_yaml)
+
         
     def check_overwrite(self, file_path):
         if os.path.exists(os.path.abspath(file_path)):
@@ -57,8 +56,7 @@ class FileManagement:
             print("DEBUG: class FileManagement variable yaml_file  %s" % file_name)
         try:
             with open(file_name, 'w') as f:
-                yaml.dump(yaml_content, f, default_flow_style=False)
-#                f.write(yaml_content)
+                f.write(yaml_content)
             f.close
         except (PermissionError, FileNotFoundError) as e:
             print("ERROR: Failed to write file: %s" % str(e))
@@ -89,20 +87,15 @@ class FileManagement:
         content_html.append("tr:nth-child(even) {\n  background-color: #dddddd;\n}\n")
         content_html.append("</style>\n</head>\n<body>\n")
         content_html.append("<table>\n")
-        for list_item in yaml_content:
-            for yaml_key in list_item:
-                content_html.append("<tr>\n")
-                content_html.append("<th width=\"1px\">%s</th>\n" % yaml_key)
-                content_html.append("</tr>\n")
-                content_html.append("<tr>\n")
-                for key in platoon_keys:
-                    content_html.append("<th width=\"1px\">%s</th>\n" % key)
-
-                content_html.append("</tr>\n")
-                for member in list_item[yaml_key]:
-                    content_html.append("<tr>\n")
-                    for key in platoon_keys:
-                        content_html.append("<td>%s</td>\n" % member[key])
-                    content_html.append("</tr>\n")
-                        
-        return(content_html)
+        print(yaml_content)
+        for unit_key in yaml_content:
+            content_html.append("<tr>\n")
+            content_html.append("<th width=\"1px\">%s</th>\n" % unit_key)
+            content_html.append("</tr>\n")
+            content_html.append("<tr>\n")
+            print(unit_key)
+#            for key in unit_key:
+#                        content_html.append("<td>%s</td>\n" % member[key])
+#                    content_html.append("</tr>\n")
+#                        
+#        return(content_html)

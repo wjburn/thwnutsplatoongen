@@ -50,8 +50,8 @@ country_code = 'us'
 infantry_type = 'Paratroopers'
 #
 #    menu_choice = menu.menu_ui(main_menu)
-manage_platoon = platoon.Platoon(country_code, infantry_type, debug=1)
-platoon = manage_platoon.get_platoon(generate_new=1)
+manage_platoon = platoon.Platoon(country_code, infantry_type)
+platoon = manage_platoon.write_platoon(generate_new=1)
 print(platoon)
 #        (country_code, platoon_type, platoon_list) = platoon_generation.get_platoon()
 #        file_generation = manage_files.GenerateContent()

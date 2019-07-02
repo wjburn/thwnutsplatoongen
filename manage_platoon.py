@@ -9,17 +9,15 @@ class ManageSquad:
         self.country_code = country_code
         self.infantry_type = infantry_type
         self.dice_bag = roll_dice.RollDice()
-        self.file_management = manage_files.FileManagement()
-        self.squad_map_list = ['yaml_maps', 'squad_map_', '.yaml']
+        self.fm = manage_files.FileManagement(self.country_code, self.infantry_type)
 
 
     def load_squad_template(self):
         #load nuts v4 squad template for country/infantry type  (ie us/paratroopers)
         #template defines member roles and maximum number of characters that can fill that role (ie rifleman:5, bar:1)
-        squad_map_file = self.squad_map_list[1] + self.country_code + self.squad_map_list[2]
-        squad_map = self.file_management.load_yaml(self.squad_map_list[0], squad_map_file)
+        squad_map = self.fm.load_yaml('squad_map')
         if self.debug:
-            print("country code:%s\ninfantry_type:%s\nsquad_map_file:%s\n" % (self.country_code, self.infantry_type, squad_map_file))
+            print("country code:%s\ninfantry_type:%s\nsquad_map_file:%s\n" % (self.country_code, self.infantry_type, squad_map))
         squad_template = squad_map[self.infantry_type]
         squad_template['country_code'] = self.country_code
         squad_template['infantry_type'] = self.infantry_type 
@@ -52,7 +50,7 @@ class ManageSquad:
     def fill_squad_role(self, role_name, role_count):
         character = {}
         roles = []
-        character_objs = [generate_character.GenerateCharacter(self.country_code) for i in range(int(role_count))]
+        character_objs = [generate_character.GenerateCharacter(self.country_code, self.infantry_type) for i in range(int(role_count))]
         for obj in character_objs:
             (character['first_name'], character['last_name'], character['rep'], character['attribute']) = obj.get_character()
             character['role'] = role_name
@@ -67,9 +65,8 @@ class ManagePlatoon(ManageSquad):
         self.debug = debug
         self.country_code = country_code
         ManageSquad.__init__(self, country_code, infantry_type, debug=self.debug)
-        self.file_management = manage_files.FileManagement()
 
-    def generate_platoon(self):
+    def generate_platoon(self): 
         platoon = []
         squad_template = self.load_squad_template()
         platoon = [self.generate_squad(squad_template) for i in range(int(squad_template['squad_per_platoon']))]

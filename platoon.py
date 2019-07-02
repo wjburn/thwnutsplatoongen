@@ -9,17 +9,15 @@ class Platoon:
         self.platoon = None
         self.country_code = country_code
         self.infantry_type = infantry_type
+        self.fm = FileManagement(self.country_code, self.infantry_type, self.debug)
         self.mp = manage_platoon.ManagePlatoon(country_code, infantry_type, self.debug) 
-        self.fm = FileManagement(self.debug)
-        self.platoon = self.get_platoon(generate_new)
 
 
-    def get_platoon(self, generate_new):
+    def get_platoon(self, generate_new=0):
         if generate_new:
             self.platoon = self.mp.generate_platoon()
         else:
-            yaml_map_name = self.country_code + '_' + self.infantry_type + '.yaml'
-            self.platoon = self.fm.load_yaml('platoons', yaml_map_name)
+            self.platoon = self.fm.load_yaml('platoon')
 
         if self.debug:
             print("DEBUG: Platoon class platoon variable value: %s\n" % self.platoon)
@@ -29,4 +27,10 @@ class Platoon:
     def update_platoon_member(self, squad, list_val, update_attribute, update_value):
         self.platoon = self.mp.update_squad_member(self.platoon, squad, list_val, update_attribute, update_value)
         print(self.platoon)
+        return(self.platoon)
+
+    def write_platoon(self, generate_new=0):
+        if generate_new:
+            self.get_platoon(generate_new=1)
+        self.fm.write_platoon_file(self.platoon)
         return(self.platoon)

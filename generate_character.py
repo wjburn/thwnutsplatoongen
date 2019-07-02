@@ -25,7 +25,7 @@ class GenerateCharacter:
 
     #if attribute_tree is 5 or less, use the v4 attributes table
     #else use compendium attributes table and returns of "reroll" are re-generated until another result is returned
-    def get_attribute(self):
+    def get_nutsv4_attribute(self):
         attribute_tree = self.dice_bag.roll_d6()
         while True:
             if attribute_tree < 5:
@@ -51,4 +51,9 @@ class GenerateCharacter:
 
      #returns(string, string, string, dict)
     def get_character(self):
-        return(self.get_first_name(), self.get_last_name(), self.get_rep(), self.get_attribute())
+        character_attributes = {
+            'name':  self.get_last_name() + ', ' + self.get_first_name(),
+            'rep': self.get_rep(), 
+            'attributes': self.get_nutsv4_attribute(),
+        }
+        return(character_attributes)

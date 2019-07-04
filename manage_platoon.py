@@ -77,9 +77,16 @@ class ManagePlatoon(ManageSquad):
         platoon = []
         squad_template = self.load_squad_template()
         platoon = [self.generate_squad(squad_template, i) for i in range(int(squad_template['squad_per_platoon']))]
-        platoon[0]['platoon_lieutenant'] = self.gc.get_character()
-        platoon[0]['platoon_lieutenant']['role'] = lt_rank
-        platoon[0]['platoon_lieutenant']['status'] = 'active'
+
+        #generate a platoon lieutenant 
+        platoon_lt = {}
+        lt_attributes = []
+        lt_attributes.append(self.gc.get_character())
+        lt_attributes[0]['role'] = lt_rank
+        lt_attributes[0]['status'] = 'active'
+        platoon_lt['platoon_lieutenant']  = lt_attributes 
+        platoon.append(platoon_lt)
+
         if self.debug:
             print("DEBUG: class ManagePlatoon variable platoon: %s\n" % platoon)
         return(platoon)

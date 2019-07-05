@@ -1,13 +1,7 @@
 #/usr/bin/env python
-#
-#import random
-#import yaml
-#import argparse
-import os
-#import sys
-#from appJar import gui
 import manage_ui
 import platoon 
+from manage_files import FileManagement
 
 
 """ class GenerateUserInterface:
@@ -35,6 +29,39 @@ import platoon
                     return(yaml_file, html_file) """
 
 
+
+
+debug = 0
+country_code_dict = {
+    'Britian': 'br',
+    'Germany': 'ge',
+    'Russia':  'ru',
+    'United States': 'us',
+}
+squad_type_list   =  []
+country_code_list =  []
+for key in country_code_dict.keys():
+    country_code_list.append(key)
+print("Generate a Platoon for NUTSv4\n")
+print("The following Countrys are available: ")
+menu = manage_ui.MenuManagement()
+country_code = menu.menu_ui(country_code_list)
+fm = FileManagement(country_code_dict[country_code], debug)
+squad_attribute_map = fm.load_yaml('squad_map')
+print("The following infantry types are available: ")
+for attr in squad_attribute_map:
+    squad_type_list.append(attr)
+infantry_type = menu.menu_ui(squad_type_list)
+gen_platoon = platoon.Platoon(country_code_dict[country_code], infantry_type, debug=0)
+gen_platoon.write_platoon(generate_new=1)
+
+#country_code = 'us'
+#infantry_type = 'Paratroopers'
+#
+#manage_platoon = platoon.Platoon(country_code, infantry_type, debug=0)
+#manage_platoon.get_country_codes()
+
+
 #if __name__ == "__main__":
 #    main_menu = [
 #        "Generate New Platoon",
@@ -56,11 +83,6 @@ import platoon
 #
 #try:
 
-country_code = 'us'
-infantry_type = 'Paratroopers'
-
-manage_platoon = platoon.Platoon(country_code, infantry_type, debug=0)
-platoon = manage_platoon.write_platoon(generate_new=1)
 #print(platoon)
 #        (country_code, platoon_type, platoon_list) = platoon_generation.get_platoon()
 #        file_generation = manage_files.GenerateContent()

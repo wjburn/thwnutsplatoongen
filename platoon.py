@@ -33,4 +33,3 @@ class Platoon:
         if generate_new:
             self.get_platoon(generate_new=1)
         self.fm.write_platoon_file(self.platoon, self.infantry_type)
-        return(self.platoon)

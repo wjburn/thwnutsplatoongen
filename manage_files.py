@@ -2,110 +2,114 @@ import os
 import yaml
 import sys
 
-class FileManagement:
+class WriteFiles:
 
-    def __init__(self):
-        self.directory_map = {
-            'platoons': 'platoons',
-            'yaml_map': 'yaml_maps',
-        }
+    def __init__(self, debug):
+        self.debug = debug
 
-    def file_error(self, file, error):
-        print("Failed file: %s " % file + str(error))
-        sys.exit()
 
-    def load_yaml(self, map_key, file_name):
-        yaml_file = os.path.join(self.directory_map[map_key], file_name + ".yaml")
+    def write_yaml(self, file_name, platoon):
+        if self.debug:
+            print("DEBUG: class FileManagement variable yaml_file  %s" % file_name)
         try:
-            with open(yaml_file, "r") as f:
-                 yaml_map = yaml.load(f)
-            f.close()
-            return(yaml_map)
-
+            with open(file_name, 'w') as f:
+                yaml.dump(platoon, f, default_flow_style=False)
+            f.close
         except (PermissionError, FileNotFoundError) as e:
-            self.file_error(yaml_file, str(e))
-
-    def check_overwrite(self, file_path):
-        if os.path.exists(os.path.abspath(file_path)):
-            overwrite = input("File exists %s\n Do you want to overwrite?(y/n): " % file_path)
-            if overwrite == 'y' or overwrite == 'yes':
-                return(1)
-            else:
-                return
-        else:
+            print("ERROR: Failed to write file: %s" % str(e))
             return(1)
-
-    def check_directory(self, directory):
-        try:
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-        except (PermissionError, FileNotFoundError) as e:
-            self.file_error(directory, str(e))
-
-    def write_html(self, map_key, country_code, file_name, html_content):
-        write_file = "w"
-        html_file = os.path.join(self.directory_map[map_key], country_code, file_name + ".html")
-        try:
-            with open(html_file, write_file) as f:
-                for line in html_content:
-                    f.write("%s\n" % line)
-            f.close()
-            print("wrote to file: %s" % html_file)
-            input("Press the any key")
-            return
-        except (PermissionError, FileNotFoundError) as e:
-            self.file_error(html_file, str(e))
-
-            
-    def write_yaml(self, map_key, country_code, file_name, yaml_content, append=None):
-        write_file = 'w'
-        if append:
-            write_file = 'a+'
-        yaml_file = os.path.join(self.directory_map[map_key], country_code, file_name + ".yaml")
-        self.check_directory(self.directory_map[map_key])
-        if not append and not self.check_overwrite(yaml_file):
-            print("Will not overwrite file: %s" % yaml_file)
-            sys.exit()
-
-        with open(yaml_file, write_file) as f:
-            yaml.dump(yaml_content, f, default_flow_style=False)
-        f.close
-        print("TEST %s" % yaml_file)
+        return
         
 
+    def write_html(self, file_name, platoon):
+        if self.debug:
+            print("DEBUG: class FileManagement variable html_file  %s" % file_name)
+        html_content = self.generate_html(platoon)
+        try:
+            with open(file_name, 'w') as f:
+                for line in html_content:
+                    f.write("%s\n" % line)
+            f.close
+        except (PermissionError, FileNotFoundError) as e:
+            print("ERROR: Failed to write file: %s" % str(e))
+            return(1)
+        return
             
-class GenerateContent(FileManagement):
-
-    def __init__(self):
-        FileManagement.__init__(self)
-
-    #TODO fix the yaml load here to not need a yaml file path
-    def generate_html(self, file_name):
-        platoon_keys = ["name", "role", "rep", "attribute", "status"]
+    def generate_html(self, platoon):
         content_html = []
-        content_yaml = self.load_yaml('platoons', file_name)
         content_html.append("<html>\n<body>\n")
         content_html.append("<style>\ntable {\nfont-family: arial, sans-serif;\nborder-collapse: collapse;\n  width: 100%;\n}\n")
         content_html.append("td, th {\n  border: 3px solid #dddddd;\n text-align: left;\n  padding: 2px;\nvertical-align: bottom;\n}\n")
         content_html.append("tr:nth-child(even) {\n  background-color: #dddddd;\n}\n")
         content_html.append("</style>\n</head>\n<body>\n")
         content_html.append("<table>\n")
-        for list_item in content_yaml:
-            for yaml_key in list_item:
+        units_in_platoon = len(platoon)
+        x = 0
+        while x < units_in_platoon:
+            for unit_label in platoon[x]:
                 content_html.append("<tr>\n")
-                content_html.append("<th width=\"1px\">%s</th>\n" % yaml_key)
+                content_html.append("<th width=\"1px\">%s</th>\n" % unit_label)
                 content_html.append("</tr>\n")
-                content_html.append("<tr>\n")
-                for key in platoon_keys:
-                    content_html.append("<th width=\"1px\">%s</th>\n" % key)
-
-                content_html.append("</tr>\n")
-
-                for member in list_item[yaml_key]:
+                for member in platoon[x][unit_label]:
                     content_html.append("<tr>\n")
-                    for key in platoon_keys:
-                        content_html.append("<td>%s</td>\n" % member[key])
+                    for key in member.keys():
+                        content_html.append("<th width=\"1px\">%s</th>\n" % key)
                     content_html.append("</tr>\n")
-                        
+                    content_html.append("<tr>\n")
+                    for key in member.keys():
+                        content_html.append("<td>%s</td>\n" %  member[key])
+                    content_html.append("</tr>\n")
+            x += 1
+        content_html.append("</table>\n</body>\n</html>")
         return(content_html)
 
+
+
+class FileManagement(WriteFiles):
+
+    def __init__(self, country_code, debug=0):
+        self.debug = debug
+        self.country_code = country_code
+        WriteFiles.__init__(self, self.debug)
+        attribute_path = os.path.join('yaml_maps', 'attribute_map.yaml')
+        first_name_path = os.path.join('yaml_maps', 'names_first_' + self.country_code + '.yaml',)
+        last_name_path = os.path.join('yaml_maps', 'names_last_' + self.country_code + '.yaml',)
+        squad_attributes_map = os.path.join('yaml_maps', 'squad_map_' + self.country_code + '.yaml')
+        self.file_name_map = {
+            'attribute': attribute_path,
+            'first_name': first_name_path,
+            'last_name': last_name_path,
+            'squad_map': squad_attributes_map,
+        }
+
+
+    def load_yaml(self, map_name):
+        try:
+            with open(self.file_name_map[map_name], "r") as f:
+                 yaml_map = yaml.load(f)
+            f.close()
+            return(yaml_map)
+        except (PermissionError, FileNotFoundError) as e:
+            print("ERROR: failed to open file: %s" % str(e))
+            os._exit(1)
+
+    def write_platoon_file(self, platoon, infantry_type):
+        platoon_file_name = self.country_code + '_' + infantry_type + '.yaml'
+        platoon_path = os.path.join('platoons', self.country_code, platoon_file_name)
+        if self.check_overwrite(platoon_path):
+            print("MESSAGE: not overwriting file: %s" % platoon_path)
+            os._exit(1)
+        self.write_yaml(platoon_path, platoon)
+        platoon_path = platoon_path.replace(".yaml", ".html")
+        self.write_html(platoon_path, platoon)
+
+        
+    def check_overwrite(self, file_path):
+        if os.path.exists(os.path.abspath(file_path)):
+            overwrite = input("File exists %s\n Do you want to overwrite?(y/n): " % file_path)
+            if overwrite == 'y' or overwrite == 'yes':
+                return
+            else:
+                return(1)
+        else:
+            return
